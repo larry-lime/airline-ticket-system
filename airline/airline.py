@@ -1,10 +1,10 @@
 from flask import Blueprint, flash, g, redirect, render_template, request, url_for
 from werkzeug.exceptions import abort
 
-from flaskr.auth import login_required
-from flaskr.db import get_db
+from airline.auth import login_required
+from airline.db import get_db
 
-bp = Blueprint("blog", __name__)
+bp = Blueprint("airline", __name__)
 
 
 @bp.route("/create", methods=("GET", "POST"))
@@ -30,9 +30,9 @@ def create():
             cursor.execute(query.format(title, body, g.user["id"]))
             conn.commit()
             cursor.close()
-            return redirect(url_for("blog.index"))
+            return redirect(url_for("airline.index"))
 
-    return render_template("blog/create.html")
+    return render_template("airline/create.html")
 
 
 def get_post(id, check_author=True):
@@ -68,7 +68,7 @@ def index():
     cursor.execute(query)
     posts = cursor.fetchall()
     cursor.close()
-    return render_template("blog/index.html", posts=posts)
+    return render_template("airline/index.html", posts=posts)
 
 
 @bp.route("/<int:id>/update", methods=("GET", "POST"))
@@ -96,9 +96,9 @@ def update(id):
             cursor.execute(query.format(title, body, id))
             conn.commit()
             cursor.close()
-            return redirect(url_for("blog.index"))
+            return redirect(url_for("airline.index"))
 
-    return render_template("blog/update.html", post=post)
+    return render_template("airline/update.html", post=post)
 
 
 @bp.route("/<int:id>/delete", methods=("POST",))
@@ -111,4 +111,4 @@ def delete(id):
     cursor.execute(query.format(id))
     conn.commit()
     cursor.close()
-    return redirect(url_for("blog.index"))
+    return redirect(url_for("airline.index"))

@@ -33,14 +33,6 @@ def init_db():
         print(data) if data else print("No returned data")
         cursor.close()
 
-def test_db():
-    conn = get_db()
-    cursor = conn.cursor(dictionary=True)
-    query = "SELECT * FROM user LIMIT 1"
-    cursor.execute(query)
-    data = cursor.fetchone()
-    print(data)
-    cursor.close()
 
 @click.command("init-db")
 def init_db_command():
@@ -48,15 +40,7 @@ def init_db_command():
     init_db()
     click.echo("Initialized the database.")
 
-@click.command("test-db")
-def test_db_command():
-    """Clear the existing data and create new tables."""
-    test_db()
-    click.echo("tested something")
-
 
 def init_app(app):
     app.teardown_appcontext(close_db)
     app.cli.add_command(init_db_command)
-    app.cli.add_command(test_db_command)
-
