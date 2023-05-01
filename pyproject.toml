@@ -1,0 +1,9 @@
+[tool.djlint]
+indent = 2
+
+[tool.pyright]
+reportMissingImports = true
+typeCheckingMode = "off"
+reportMissingTypeStubs = true
+venvPath = "."
+venv = ".venv"
