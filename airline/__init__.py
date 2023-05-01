@@ -1,5 +1,3 @@
-import os
-
 from flask import Flask
 from dotenv import dotenv_values
 
