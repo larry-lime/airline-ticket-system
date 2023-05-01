@@ -4,7 +4,13 @@
     <div class="row">
       <div class="col-sm-8">
         <h1>
-          {% block title %}My Feed{% endblock %}
+          {% block title %}
+            {% if g.user %}
+              {{ g.user['username'].title() }}'s Dashboard
+            {% else %}
+              Homepage
+            {% endif %}
+          {% endblock %}
         </h1>
       </div>
       <div class="col-sm-4 text-end">

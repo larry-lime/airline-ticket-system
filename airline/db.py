@@ -25,7 +25,7 @@ def close_db(e=None):
 def init_db():
     conn = get_db()
 
-    with current_app.open_resource("schema.sql") as f:
+    with current_app.open_resource("sql/schema.sql") as f:
         cursor = conn.cursor()
         query = f.read().decode("utf8")
         cursor.execute(query, multi=True)

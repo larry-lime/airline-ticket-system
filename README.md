@@ -39,3 +39,7 @@ flask --app airline init-db
 ```
 flask --app airline run --debug
 ```
+## TODOs
+- Add ability to login with third party services (Google, Facebook, etc.)
+- Have a form send you an email when a new user signs up
+  - Use [Formspree](https://formspree.io/forms) potentially

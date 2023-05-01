@@ -1,5 +1,4 @@
 import functools
-import logging
 
 from flask import (
     Blueprint,
@@ -46,6 +45,7 @@ def load_logged_in_user():
         cursor.close()
 
 
+# TODO: Finish this function along with register_customer, register_agent, and register_staff
 @bp.route("/register", methods=("GET", "POST"))
 def register():
     if request.method == "POST":
@@ -88,7 +88,7 @@ def register():
                 return redirect(url_for("auth.register_customer"))
             elif user_type == "booking_agent":
                 return redirect(url_for("auth.register_agent"))
-            elif user_type == "airling_staff":
+            elif user_type == "airline_staff":
                 return redirect(url_for("auth.register_staff"))
 
         flash(error)
@@ -204,7 +204,7 @@ def register_agent():
 
         flash(error)
 
-    return render_template("auth/airline_staff.html")
+    return render_template("auth/booking_agent.html")
 
 
 @bp.route("/login", methods=("GET", "POST"))

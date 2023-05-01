@@ -32,14 +32,14 @@
                 <span class="nav-link">{{ g.user['username'] }}</span>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('auth.logout') }}">Log Out</a>
+                <a class="nav-link" href="{{ url_for('auth.logout') }}">Sign out</a>
               </li>
             {% else %}
               <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('auth.register') }}">Register</a>
+                <a class="nav-link" href="{{ url_for('auth.register') }}">Sign up</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('auth.login') }}">Log In</a>
+                <a class="nav-link" href="{{ url_for('auth.login') }}">Login</a>
               </li>
             {% endif %}
           </ul>
