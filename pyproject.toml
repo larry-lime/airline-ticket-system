@@ -1,5 +1,17 @@
+[project]
+name = "qilin-airline"
+version = "0.1.0"
+dependencies = [
+  "flask",
+]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
 [tool.djlint]
 indent = 2
+preserve_blank_lines=true
 
 [tool.pyright]
 reportMissingImports = true
