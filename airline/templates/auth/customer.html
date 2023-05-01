@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <div class="container my-4">
+    <div class="row">
+      <div class="col-sm-8">
+        <h1>
+          {% block title %}Customer Registration{% endblock %}
+        </h1>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block content %}
+  <div class="container my-4">
+    <div class="row">
+      <div class="col-lg-6">
+        <form method="post">
+          <div class="mb-3">
+            <label for="building_number" class="form-label">Building Number (Ex: 123)</label>
+            <input type="text"
+                   class="form-control"
+                   id="building_number"
+                   name="building_number"
+                   required>
+          </div>
+          <div class="mb-3">
+            <label for="street" class="form-label">Street (Ex: Main St)</label>
+            <input type="text" class="form-control" id="street" name="street" required>
+          </div>
+          <div class="mb-3">
+            <label for="city" class="form-label">City (Ex: New York)</label>
+            <input type="text" class="form-control" id="city" name="city" required>
+          </div>
+          <div class="mb-3">
+            <label for="state" class="form-label">State (Ex: NY)</label>
+            <input type="text" class="form-control" id="state" name="state" required>
+          </div>
+          <div class="mb-3">
+            <label for="phone_number" class="form-label">Phone Number (Ex: 1234567890)</label>
+            <input type="text"
+                   class="form-control"
+                   id="phone_number"
+                   name="phone_number"
+                   required>
+          </div>
+          <div class="mb-3">
+            <label for="passport_number" class="form-label">Passport Number (Ex: 1234567890)</label>
+            <input type="text"
+                   class="form-control"
+                   id="passport_number"
+                   name="passport_number"
+                   required>
+          </div>
+          <div class="mb-3">
+            <label for="passport_expiration" class="form-label">Passport Expiration (Ex: 2021-01-01)</label>
+            <input type="text"
+                   class="form-control"
+                   id="passport_expiration"
+                   name="passport_expiration"
+                   required>
+          </div>
+          <div class="mb-3">
+            <label for="passport_country" class="form-label">Passport Country (Ex: USA)</label>
+            <input type="text"
+                   class="form-control"
+                   id="passport_country"
+                   name="passport_country"
+                   required>
+          </div>
+          <div class="mb-3">
+            <label for="date_of_birth" class="form-label">Date of Birth (Ex: 2021-01-01)</label>
+            <input type="text"
+                   class="form-control"
+                   id="date_of_birth"
+                   name="date_of_birth"
+                   required>
+          </div>
+          <button type="submit" class="btn btn-primary">Register</button>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}
