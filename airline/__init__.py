@@ -15,7 +15,7 @@ def create_app():
         MYSQL_HOST="localhost",
         MYSQL_USER="root",
         MYSQL_PASSWORD=os.getenv("MYSQL_PASSWORD"),
-        MYSQL_DB_NAME="flask_tutorial_blog",
+        MYSQL_DB_NAME="flask_tutorial_airline",
     )
 
     from . import db
@@ -27,10 +27,10 @@ def create_app():
 
     app.register_blueprint(auth.bp)
 
-    # Register the blog blueprint
-    from . import blog
+    # Register the airline blueprint
+    from . import airline
 
-    app.register_blueprint(blog.bp)
+    app.register_blueprint(airline.bp)
     app.add_url_rule("/", endpoint="index")
 
     return app
