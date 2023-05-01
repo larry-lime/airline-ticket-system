@@ -1,10 +1,9 @@
-import logging
 import os
 
 from flask import Flask
-from dotenv import load_dotenv
+from dotenv import dotenv_values
 
-load_dotenv()
+env_vars = dotenv_values(".env")
 
 
 def create_app():
@@ -14,7 +13,7 @@ def create_app():
         SECRET_KEY="dev",
         MYSQL_HOST="localhost",
         MYSQL_USER="root",
-        MYSQL_PASSWORD=os.getenv("MYSQL_PASSWORD"),
+        MYSQL_PASSWORD=env_vars["MYSQL_PASSWORD"],
         MYSQL_DB_NAME="flask_tutorial_blog",
     )
 
