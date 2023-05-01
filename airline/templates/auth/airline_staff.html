@@ -14,22 +14,19 @@
 
 {% block content %}
   <!--Require fields  -->
-    <!-- building_number VARCHAR(30) NOT NULL, -->
-    <!-- street VARCHAR(30) NOT NULL, -->
-    <!-- city VARCHAR(30) NOT NULL, -->
-    <!-- state VARCHAR(30) NOT NULL, -->
-    <!-- phone_number INT(11) NOT NULL, -->
-    <!-- passport_number VARCHAR(30) NOT NULL, -->
-    <!-- passport_expiration DATE NOT NULL, -->
-    <!-- passport_country VARCHAR(50) NOT NULL, -->
-    <!-- date_of_birth DATE NOT NULL, -->
+  <!-- date_of_birth DATE NOT NULL, -->
+  <!-- airline_name VARCHAR(50) NOT NULL, -->
   <div class="container my-4">
     <div class="row">
       <div class="col-lg-6">
         <form method="post">
           <div class="mb-3">
-            <label for="username" class="form-label">Username</label>
-            <input name="username" id="username" class="form-control" required>
+            <label for="date_of_birth" class="form-label">Your Date of Birth (Ex. 1999-01-01)</label>
+            <input name="date_of_birth" id="date_of_birth" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label for="airline_name" class="form-label">The Airline You Work For (Ex. Delta)</label>
+            <input name="airline_name" id="airline_name" class="form-control" required>
           </div>
           <button type="submit" class="btn btn-primary">Register</button>
         </form>
@@ -37,4 +34,3 @@
     </div>
   </div>
 {% endblock %}
-
