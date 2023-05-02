@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <div class="container my-4">
+    <div class="row">
+      <div class="col-sm-8">
+        <h1>
+          {% block title %}
+            {{ flight['airline_name'] }} Airlines Flight {{ flight['flight_num'] }} from {{ flight['departure_airport'] }} to {{ flight['arrival_airport'] }}
+          {% endblock %}
+        </h1>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+{% block content %}
+  <!--TODO: Dress this up to look much nicer-->
+  <div class="container my-4">
+    <div class="row">
+      <div class="col-lg-6">
+        <form method="post">
+          <div class="mb-3">
+            <select class="form-select" id="ticket" name="ticket">
+              <option value="" disabled selected hidden>Choose Ticket Number...</option>
+              {% for ticket in tickets %}
+                <option value="{{ ticket['ticket_id'] }}">ID {{ ticket['ticket_id'] }} at ${{ ticket['price'] }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <button type="submit" class="btn btn-primary">Confirm Purchase</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}
