@@ -140,31 +140,39 @@ def register_customer():
 @bp.route("/register/staff", methods=("GET", "POST"))
 def register_staff():
     if request.method == "POST":
-        username = g.username
-        password = g.password
-        first_name = g.first_name
-        last_name = g.last_name
-        user_type = g.user_type
+        username = session["username"]
+        password = session["password"]
+        first_name = session["first_name"]
+        last_name = session["last_name"]
+        date_of_birth = request.form["date_of_birth"]
+        airline_name = request.form["airline_name"]
 
         conn = get_db()
         cursor = conn.cursor(dictionary=True)
         error = None
 
-        query = "SELECT * FROM {} WHERE username = '{}'"
-        cursor.execute(query.format(user_type, username))
+        query = "SELECT * FROM airline_staff WHERE username = '{}'"
+        cursor.execute(query.format(username))
         data = cursor.fetchone()
         if data is not None:
             error = f"User {username} is already registered."
         else:
-            query = """
-                    INSERT INTO {} (username, password, first_name, last_name)
-                    VALUES('{}','{}','{}','{}')
+            # Insert airline_name into table airline if it does not exist
+            query1 = "INSERT IGNORE INTO airline (airline_name) VALUES('{}')"
+            cursor.execute(query1.format(airline_name.title()))
+            query2 = """
+                    INSERT INTO airline_staff (username, password, first_name, last_name, date_of_birth, airline_name)
+                    VALUES('{}','{}','{}','{}', '{}', '{}')
                     """
             cursor.execute(
-                user_type,
-                query.format(username, generate_password_hash(password)),
-                first_name,
-                last_name,
+                query2.format(
+                    username,
+                    password,
+                    first_name,
+                    last_name,
+                    date_of_birth,
+                    airline_name.title(),
+                )
             )
             conn.commit()
             cursor.close()
