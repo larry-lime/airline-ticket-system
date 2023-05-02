@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 {% block header %}
-  <div class="container my-4">
+  <div class="container-lg-5">
     <div class="row">
-      <div class="col-sm-8">
+      <div class="col">
         <h1>
           {% block title %}
             {% if g.user %}
-              {{ g.user['username'].title() }}'s Dashboard
+              {{ g.user['first_name'].title() }} the {{ g.user_type.replace("_", " ").title() }}'s Dashboard
             {% else %}
               Homepage
             {% endif %}
@@ -14,33 +14,92 @@
         </h1>
       </div>
       <div class="col-sm-4 text-end">
-        {% if g.user %}<a class="btn btn-primary" href="{{ url_for('airline.create') }}">New</a>{% endif %}
+        {% if g.user %}<a class="btn btn-primary" href="{{ url_for('airline.create') }}">My Flights</a>{% endif %}
       </div>
     </div>
   </div>
 {% endblock %}
 {% block content %}
-  <div class="container my-5">
-    {% for post in posts %}
-      <div class="card mb-3">
-        <div class="card-header">
-          <div class="row">
-            <div class="col-sm-8">
-              <h3>{{ post['title'] }}</h3>
-              <small class="text-muted">by {{ post['username'] }} on {{ post['created'].strftime('%Y-%m-%d') }}</small>
-            </div>
-            <div class="col-sm-4 text-end">
-              {% if g.user['id'] == post['author_id'] %}
-                <a class="btn btn-primary"
-                   href="{{ url_for('airline.update', id=post['id']) }}">Edit</a>
-              {% endif %}
-            </div>
+	
+  <div class="container-lg-5 pt-3 border rounded p-3">
+    <form method="post">
+      <div class="row mb-3">
+        <div class="col-md-6 justify-content-left">
+          <div class="btn-group-md" role="group">
+            <button type="button"
+                    class="btn btn-primary active"
+                    id="round-trip-btn"
+                    onclick="unhideElement()">Return</button>
+            <button type="button"
+                    class="btn btn-primary"
+                    id="one-way-btn"
+                    onclick="hideElement()">One-way</button>
           </div>
         </div>
-        <div class="card-body">
-          <p class="card-text">{{ post['body'] }}</p>
+      </div>
+      <div class="row">
+        <div class="col-sm-3">
+          <div class="input-group">
+            <select class="form-select" id="leaving_from" name="leaving_from">
+              <option value="" disabled selected hidden>Leaving from...</option>
+              {% for airport in airports %}
+                <option value="{{ airport }}">{{ airport['airport_name'] }}, {{ airport['airport_city'] }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <div class="input-group">
+            <select class="form-select" id="going_to" name="going_to">
+              <option value="" disabled selected hidden>Going to...</option>
+              {% for airport in airports %}
+                <option value="{{ airport }}">{{ airport['airport_name'] }}, {{ airport['airport_city'] }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="col-sm">
+          <div class="input-group">
+            <label class="input-group-text" for="departure_date">Departing</label>
+            <input type="date"
+                   class="form-control"
+                   id="departure_date"
+                   name="departure_date">
+          </div>
+        </div>
+        <div id="element-to-toggle" class="col-sm">
+          <div class="input-group">
+            <label class="input-group-text" for="return_date">Returning</label>
+            <input type="date" class="form-control" id="return_date" name="return_date">
+          </div>
         </div>
       </div>
-    {% endfor %}
+      <div class="row justify-content-center mt-3">
+        <button type="submit" class="btn btn-primary col-6 col-md-3">Search</button>
+      </div>
+    </form>
   </div>
+  <script>
+  const roundTripBtn = document.getElementById("round-trip-btn");
+  const oneWayBtn = document.getElementById("one-way-btn");
+
+  roundTripBtn.addEventListener("click", () => {
+    roundTripBtn.classList.add("active");
+    oneWayBtn.classList.remove("active");
+  });
+
+  oneWayBtn.addEventListener("click", () => {
+    oneWayBtn.classList.add("active");
+    roundTripBtn.classList.remove("active");
+  });
+
+  function hideElement() {
+			var element = document.getElementById("element-to-toggle");
+			element.style.display = "none";
+		}
+  function unhideElement() {
+      var element = document.getElementById("element-to-toggle");
+      element.style.display = "block";
+    }
+  </script>
 {% endblock %}
