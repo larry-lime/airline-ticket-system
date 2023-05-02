@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% block header %}
+  <div class="container-lg-5">
+    <div class="row">
+      <div class="col">
+        <h1>Search Results</h1>
+      </div>
+      <div class="col-sm-4 text-end">
+        {% if g.user %}<a class="btn btn-primary" href="{{ url_for('airline.create') }}">My Flights</a>{% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="container-lg-5 pt-3 border rounded p-3">
+    <form method="post">
+      <div class="row d-flex justify-content-center align-items-center">
+        <div class="col-sm gx-2">
+          <div class="input-group">
+            <select class="form-select" id="leaving_from" name="leaving_from">
+              <option value="" disabled selected hidden>Leaving from...</option>
+              {% for airport in airports %}
+                <option value="{{ airport }}">{{ airport['airport_name'] }}, {{ airport['airport_city'] }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="col-sm gx-2">
+          <div class="input-group">
+            <select class="form-select" id="going_to" name="going_to">
+              <option value="" disabled selected hidden>Going to...</option>
+              {% for airport in airports %}
+                <option value="{{ airport }}">{{ airport['airport_name'] }}, {{ airport['airport_city'] }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="col-sm-3 gx-2">
+          <div class="input-group">
+            <label class="input-group-text" for="departure_date">Departing</label>
+            <input type="date"
+                   class="form-control"
+                   id="departure_date"
+                   name="departure_date">
+          </div>
+        </div>
+        <div id="element-to-toggle" class="col-sm-3 gx-2">
+          <div class="input-group">
+            <label class="input-group-text" for="return_date">Returning</label>
+            <input type="date" class="form-control" id="return_date" name="return_date">
+          </div>
+        </div>
+        <div class="col-sm gx-2">
+          <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <script>
+  const roundTripBtn = document.getElementById("round-trip-btn");
+  const oneWayBtn = document.getElementById("one-way-btn");
+
+  roundTripBtn.addEventListener("click", () => {
+    roundTripBtn.classList.add("active");
+    oneWayBtn.classList.remove("active");
+  });
+
+  oneWayBtn.addEventListener("click", () => {
+    oneWayBtn.classList.add("active");
+    roundTripBtn.classList.remove("active");
+  });
+
+  function hideElement() {
+			var element = document.getElementById("element-to-toggle");
+			element.style.display = "none";
+		}
+  function unhideElement() {
+      var element = document.getElementById("element-to-toggle");
+      element.style.display = "block";
+    }
+  </script>
+{% endblock %}
+{% block content %}
+  <!--TODO: Remove this! -->
+  <div class="container-lg-5 pt-3 >
+    <div class="container md">
+      {% for flight in flights %}
+        <div class="card mb-3">
+          <div class="card-header">
+            <div class="row">
+              <div class="col-sm-8">
+                <h3>{{ flight['fight_num'] }}</h3>
+                <small class="text-muted">{{ flight['price'] }}</small>
+              </div>
+              <div class="col-sm-4 text-end"></div>
+            </div>
+          </div>
+          <div class="card-body">
+            <p class="card-text">{{ flight['airline_name'] }}</p>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}
