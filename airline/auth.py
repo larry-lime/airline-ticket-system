@@ -34,6 +34,8 @@ def load_logged_in_user():
     username = session.get("username")
     user_type = session.get("user_type")
 
+    g.user_type = None if user_type is None else user_type
+
     if username is None:
         g.user = None
     else:
@@ -46,7 +48,6 @@ def load_logged_in_user():
         cursor.close()
 
 
-# TODO: Finish this function along with register_customer, register_agent, and register_staff
 @bp.route("/register", methods=("GET", "POST"))
 def register():
     if request.method == "POST":
@@ -80,6 +81,7 @@ def register():
         flash(error)
 
     return render_template("auth/register.html")
+
 
 @bp.route("register/customer", methods=("GET", "POST"))
 def register_customer():
@@ -137,6 +139,7 @@ def register_customer():
 
     return render_template("auth/customer.html")
 
+
 @bp.route("/register/staff", methods=("GET", "POST"))
 def register_staff():
     if request.method == "POST":
@@ -182,34 +185,38 @@ def register_staff():
 
     return render_template("auth/airline_staff.html")
 
+
 @bp.route("/register/agent", methods=("GET", "POST"))
 def register_agent():
     if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
-        first_name = request.form["first_name"]
-        last_name = request.form["last_name"]
-        user_type = request.form["user_type"]
+        username = session["username"]
+        password = session["password"]
+        first_name = session["first_name"]
+        last_name = session["last_name"]
+        booking_agent_id = int(request.form["booking_agent_id"])
 
         conn = get_db()
         cursor = conn.cursor(dictionary=True)
         error = None
 
-        query = "SELECT * FROM {} WHERE username = '{}'"
-        cursor.execute(query.format(user_type, username))
+        query = "SELECT * FROM booking_agent WHERE username = '{}'"
+        cursor.execute(query.format(username))
         data = cursor.fetchone()
         if data is not None:
             error = f"User {username} is already registered."
         else:
             query = """
-                    INSERT INTO {} (username, password, first_name, last_name)
-                    VALUES('{}','{}','{}','{}')
+                    INSERT INTO booking_agent (username, password, first_name, last_name, booking_agent_id)
+                    VALUES('{}','{}','{}','{}', {})
                     """
             cursor.execute(
-                user_type,
-                query.format(username, generate_password_hash(password)),
-                first_name,
-                last_name,
+                query.format(
+                    username,
+                    password,
+                    first_name,
+                    last_name,
+                    booking_agent_id,
+                )
             )
             conn.commit()
             cursor.close()
@@ -226,14 +233,13 @@ def login():
         username = request.form["username"]
         password = request.form["password"]
         user_type = request.form["user_type"]
-        current_app.logger.info(f"User type: {user_type}")
 
         conn = get_db()
         cursor = conn.cursor(dictionary=True)
         error = None
 
-        query = "SELECT * FROM user WHERE username = '{}'"
-        cursor.execute(query.format(username))
+        query = "SELECT * FROM {} WHERE username = '{}'"
+        cursor.execute(query.format(user_type, username))
         user = cursor.fetchone()
 
         if user is None:
@@ -243,7 +249,8 @@ def login():
 
         if error is None:
             session.clear()
-            session["user_id"] = user["id"]
+            session["username"] = user["username"]
+            session["user_type"] = user_type
             return redirect(url_for("index"))
 
         flash(error)
