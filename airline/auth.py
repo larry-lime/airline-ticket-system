@@ -63,13 +63,17 @@ def register():
         cursor = conn.cursor(dictionary=True)
         error = None
 
+        # check if username is in the form of an email
+
         # Check if username is already registered
         query = "SELECT * FROM {} WHERE username = '{}'"
         cursor.execute(query.format(user_type, username))
         data = cursor.fetchone()
 
         # If username is not registered, redirect to the appropriate registration page
-        if data is not None:
+        if "@" not in username and user_type in ['customer', 'booking_agent']:
+            error = "Username must be an email address."
+        elif data is not None:
             error = f"User {username} is already registered."
         elif user_type == "airline_staff":
             return redirect(url_for("auth.register_staff"))
