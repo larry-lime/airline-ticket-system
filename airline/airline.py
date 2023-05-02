@@ -1,3 +1,4 @@
+import datetime
 from flask import (
     Blueprint,
     flash,
@@ -139,18 +140,39 @@ def search_results():
         airports = cursor.fetchall()
         cursor.close()
 
-
         conn = get_db()
         cursor = conn.cursor(dictionary=True)
         error = None
+        # TODO: Add a simple WHERE clause to the query below when we have enough sample data
         query = """
-                SELECT *
-                FROM flight
-                JOIN airport on flight.departure_airport = airport.airport_name
+                SELECT airline_name,
+                       flight_num,
+                       departure_airport,
+                       DATE_FORMAT(departure_time, '%h:%i %p') AS departure_time,
+                       arrival_airport,
+                       DATE_FORMAT(arrival_time, '%h:%i %p') AS arrival_time,
+                       price,
+                       status,
+                       airplane_id,
+                       a1.airport_city as departure_city,
+                       a2.airport_city as arrival_city 
+                FROM flight as f
+                JOIN airport as a1 on f.departure_airport = a1.airport_name
+                JOIN airport as a2 on f.arrival_airport = a2.airport_name
                 """
         cursor.execute(query)
         flights = cursor.fetchall()
         cursor.close()
+
+        # TODO:
+        # 1. Make the title the departure_time - arrival_time
+        # 2. Under the title, show the departure city (departure_airport) - arrival city (arrival_airport)
+        # 3. Under that, show the airline name
+        # 4. Show how long the flight is (departure_time - arrival_time)
+        # 5. In big letters, show the price of the flight
+
+        # 6. Show the flight status (on time, delayed, cancelled)
+        # 7. EXTRA: Above the big letters, show how many seats left
 
         return render_template(
             "airline/results.html",
@@ -230,6 +252,98 @@ def update(id):
             return redirect(url_for("airline.index"))
 
     return render_template("airline/update.html", post=post)
+
+
+def get_flight(flight_num):
+    conn = get_db()
+    cursor = conn.cursor(dictionary=True)
+    query = """
+            SELECT airline_name,
+                   flight_num,
+                   departure_airport,
+                   DATE_FORMAT(departure_time, '%h:%i %p') AS departure_time,
+                   arrival_airport,
+                   DATE_FORMAT(arrival_time, '%h:%i %p') AS arrival_time,
+                   price,
+                   status,
+                   airplane_id,
+                   a1.airport_city as departure_city,
+                   a2.airport_city as arrival_city 
+            FROM flight as f
+            JOIN airport as a1 on f.departure_airport = a1.airport_name
+            JOIN airport as a2 on f.arrival_airport = a2.airport_name
+            WHERE flight_num = '{}'
+            """
+    cursor.execute(query.format(flight_num))
+    flight = cursor.fetchone()
+    cursor.close()
+
+    if flight is None:
+        abort(404, f"Post id {flight_num} doesn't exist.")
+
+    return flight
+
+def get_tickets(flight_num):
+    conn = get_db()
+    cursor = conn.cursor(dictionary=True)
+    query = """
+            SELECT *
+            FROM ticket
+            NATURAL JOIN flight
+            WHERE flight_num = '{}'
+            """
+    # Get all the available tickets for a given flight
+    cursor.execute(query.format(flight_num))
+    tickets = cursor.fetchall()
+    cursor.close()
+
+    return tickets
+
+def get_user_info(username,user_type):
+    conn = get_db()
+    cursor = conn.cursor(dictionary=True)
+    query = """
+            SELECT *
+            FROM {}
+            WHERE username = '{}'
+            """
+    # Get all the available tickets for a given flight
+    cursor.execute(query.format(user_type, username))
+    user_info = cursor.fetchone()
+    cursor.close()
+
+    return user_info
+
+
+@bp.route("/<int:id>/purchase", methods=("GET", "POST"))
+@login_required
+def purchase_ticket(id):
+    flight = get_flight(id)
+    tickets = get_tickets(id)
+
+    if request.method == "POST":
+        user_info = get_user_info(g.user["username"],g.user_type)
+        ticket_id = request.form["ticket"]
+        purchase_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        error = None
+
+        conn = get_db()
+        cursor = conn.cursor()
+        query = """
+                INSERT INTO purchases(ticket_id, customer_email, purchase_date)
+                VALUES ({},'{}','{}')
+                """
+        cursor.execute(query.format(
+            ticket_id,
+            user_info['username'],
+            purchase_date
+            ))
+        conn.commit()
+        cursor.close()
+        # TODO: This should redirect to 'My Flights'
+        return redirect(url_for("airline.index"))
+
+    return render_template("airline/purchase_ticket.html", flight=flight,tickets=tickets)
 
 
 @bp.route("/<int:id>/delete", methods=("POST",))
