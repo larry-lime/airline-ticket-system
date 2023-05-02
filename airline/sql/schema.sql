@@ -27,22 +27,22 @@ DROP TABLE IF EXISTS airport;
 DROP TABLE IF EXISTS customer;
 
 -- Blog Tables
--- CREATE TABLE
---   user(
---     id INT PRIMARY KEY AUTO_INCREMENT,
---     username VARCHAR(255) UNIQUE NOT NULL,
---     password VARCHAR(255) NOT NULL
---   );
---
--- CREATE TABLE
---   post (
---     id INT PRIMARY KEY AUTO_INCREMENT,
---     author_id INT NOT NULL,
---     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
---     title TEXT NOT NULL,
---     body TEXT NOT NULL,
---     FOREIGN KEY (author_id) REFERENCES USER(id)
---   );
+CREATE TABLE
+  user(
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL
+  );
+
+CREATE TABLE
+  post (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    author_id INT NOT NULL,
+    created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    title TEXT NOT NULL,
+    body TEXT NOT NULL,
+    FOREIGN KEY (author_id) REFERENCES USER(id)
+  );
 
 -- Airline Dashboard Tables
 CREATE TABLE

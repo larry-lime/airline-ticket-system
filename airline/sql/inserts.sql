@@ -116,6 +116,7 @@ VALUES ('agent1', 'Delta'),
        ('agent5', 'JetBlue');
 
 -- Customer Table
+-- TODO: Hash these passwords with generate_password_hash() and insert them again
 INSERT INTO customer (username, password, first_name, last_name, building_number, street, city, state, phone_number,
                       passport_number, passport_expiration, passport_country, date_of_birth)
 VALUES ('johndoe@gmail.com', 'password1', 'John', 'Doe', '123', 'Main Street', 'City 1', 'State 1', '1234567890',
@@ -128,7 +129,9 @@ VALUES ('johndoe@gmail.com', 'password1', 'John', 'Doe', '123', 'Main Street', '
         '9876543210',
         'JKL234', '2023-08-31', 'Country 1', '1988-11-10'),
        ('millybob@gmail.com', 'password5', 'Milly', 'Bob', '567', 'Pine Street', 'City 2', 'State 2', '1112223333',
-        'MNO567', '2022-10-25', 'Country 2', '1995-03-25');
+        'MNO567', '2022-10-25', 'Country 2', '1995-03-25'),
+       ('larrylime4132@gmail.com', 'pbkdf2:sha256:600000$0WjTQnwxabhZFrso$f79478edcf8a568d92ab96700026ba519f30ebb176d538ed4fd01637ec737eba', 'Lawrence', 'Lim', '123', '424 Newburgh Court', 'West New York', 'New Jersey', '+8618917525187',
+        '1', '2023-05-11', 'Hong Kong', '2023-05-24');
 
 -- Flight Table
 INSERT INTO flight (airline_name, flight_num, departure_airport, departure_time, arrival_airport, arrival_time, price,
@@ -148,9 +151,9 @@ VALUES (1, 'American', 123),
        (5, 'JetBlue', 1213);
 
 -- Purchases Table
-INSERT INTO purchases(ticket_id, customer_email, booking_agent_id, purchase_date)
-VALUES (1, 'johndoe@gmail.com', 1, '2023-06-01'),
-       (2, 'janedoe@gmail.com', 2, '2023-06-10'),
-       (3, 'jamesbrown@gmail.com', 3, '2023-06-15'),
-       (4, 'sarahjohnson@gmail.com', NULL, '2023-06-05'),
-       (5, 'millybob@gmail.com', NULL, '2023-06-20');
+-- INSERT INTO purchases(ticket_id, customer_email, booking_agent_id, purchase_date)
+-- VALUES (1, 'johndoe@gmail.com', 1, '2023-06-01'),
+--        (2, 'janedoe@gmail.com', 2, '2023-06-10'),
+--        (3, 'jamesbrown@gmail.com', 3, '2023-06-15'),
+--        (4, 'sarahjohnson@gmail.com', NULL, '2023-06-05'),
+--        (5, 'millybob@gmail.com', NULL, '2023-06-20');

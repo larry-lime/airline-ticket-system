@@ -39,7 +39,26 @@ flask --app airline init-db
 ```
 flask --app airline run --debug
 ```
+
 ## TODOs
-- Add ability to login with third party services (Google, Facebook, etc.)
-- Have a form send you an email when a new user signs up
+
+### Easy
+
+- [ ] Add icons to the frontend
+- [ ] Have a form send you an email when a new user signs up
   - Use [Formspree](https://formspree.io/forms) potentially
+- [ ] Add foreign currency support
+- [ ] Ask use to use their current location
+
+### Medium
+
+- [ ] Add foreign language support. Auto translate everything?
+- [ ] Add ability to login with third party services (Google, Facebook, etc.)
+
+### Hard
+
+- [ ] Add articles relavent to the airline industry and search history
+  - [ ] Add a reccomentation system if possible
+  - [ ] Reccomend them based on their search history
+  - [ ] Does not need to use machine learning. It can simply use keywords
+  - [ ] Alternatively, you can use some NLP library
