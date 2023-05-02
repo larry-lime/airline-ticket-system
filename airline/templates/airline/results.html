@@ -12,7 +12,7 @@
   </div>
   <div class="container-lg-5 pt-3 border rounded p-3">
     <form method="post">
-      <div class="row d-flex justify-content-center align-items-center">
+      <div class="row d-flex justify-content-right align-items-center">
         <div class="col-sm gx-2">
           <div class="input-group">
             <select class="form-select" id="leaving_from" name="leaving_from">
@@ -87,17 +87,21 @@
           <div class="card-header">
             <div class="row">
               <div class="col-sm-8">
-                <h3>{{ flight['fight_num'] }}</h3>
-                <small class="text-muted">{{ flight['price'] }}</small>
+                <small class="text">{{ flight['departure_time'] }} - {{ flight['arrival_time'] }} ({{ flight['status'] }})</small>
               </div>
-              <div class="col-sm-4 text-end"></div>
+              <div class="col-sm-8">
+                <small class="text-muted">{{ flight['departure_city'] }} ({{ flight['departure_airport'] }})- {{ flight['arrival_city'] }} ({{ flight['arrival_airport'] }})</small>
+              </div>
+              <div class="col-sm-4 text-end">
+                <small class="text-muted">{{ flight['airline_name'] }}</small>
+              </div>
             </div>
           </div>
           <div class="card-body">
-            <p class="card-text">{{ flight['airline_name'] }}</p>
+            <p class="card-text">USD ${{ flight['price'] }}</p>
+            <a class="action" href="{{ url_for('airline.purchase_ticket', id=flight['flight_num']) }}">Purchase</a>
           </div>
         </div>
       {% endfor %}
     </div>
-  </div>
-{% endblock %}
+  {% endblock %}
