@@ -31,16 +31,17 @@ def login_required(view):
 
 @bp.before_app_request
 def load_logged_in_user():
-    user_id = session.get("user_id")
+    username = session.get("username")
+    user_type = session.get("user_type")
 
-    if user_id is None:
+    if username is None:
         g.user = None
     else:
         conn = get_db()
         cursor = conn.cursor(dictionary=True)
-        query = "SELECT * FROM user where id = '{}'"
-        cursor.execute(query.format(user_id))
-        g.user = cursor.fetchone()  # a tuple with (id, name, password_hash)
+        query = "SELECT * FROM {} where username = '{}'"
+        cursor.execute(query.format(user_type, username))
+        g.user = cursor.fetchone()
         conn.commit()
         cursor.close()
 
@@ -49,47 +50,32 @@ def load_logged_in_user():
 @bp.route("/register", methods=("GET", "POST"))
 def register():
     if request.method == "POST":
-        username = g.username = request.form["username"]
-        password = g.password = request.form["password"]
-        first_name = g.first_name = request.form["first_name"]
-        last_name = g.last_name = request.form["last_name"]
-        user_type = g.user_type = request.form["user_type"]
+        username = session["username"] = request.form["username"]
+        password = session["password"] = generate_password_hash(
+            request.form["password"]
+        )
+        session["first_name"] = request.form["first_name"]
+        session["last_name"] = request.form["last_name"]
+        user_type = session["user_type"] = request.form["user_type"]
 
         conn = get_db()
         cursor = conn.cursor(dictionary=True)
         error = None
 
-        # NOTE: I don't expect any errors so I comment this out
-        # if not username:
-        #     error = "Username is required."
-        # elif not password:
-        #     error = "Password is required."
-
+        # Check if username is already registered
         query = "SELECT * FROM {} WHERE username = '{}'"
-        cursor.execute(query.format(g.user_type, username))
+        cursor.execute(query.format(user_type, username))
         data = cursor.fetchone()
+
+        # If username is not registered, redirect to the appropriate registration page
         if data is not None:
             error = f"User {username} is already registered."
-        else:
-            current_app.logger.info("User %s registered", username)
-            # query = """
-            #         INSERT INTO {} (username, password, first_name, last_name)
-            #         VALUES('{}','{}','{}','{}')
-            #         """
-            # cursor.execute(
-            #     user_type,
-            #     query.format(username, generate_password_hash(password)),
-            #     first_name,
-            #     last_name,
-            # )
-            # conn.commit()
-            # cursor.close()
-            if user_type == "customer":
-                return redirect(url_for("auth.register_customer"))
-            elif user_type == "booking_agent":
-                return redirect(url_for("auth.register_agent"))
-            elif user_type == "airline_staff":
-                return redirect(url_for("auth.register_staff"))
+        elif user_type == "airline_staff":
+            return redirect(url_for("auth.register_staff"))
+        elif user_type == "booking_agent":
+            return redirect(url_for("auth.register_agent"))
+        elif user_type == "customer":
+            return redirect(url_for("auth.register_customer"))
 
         flash(error)
 
@@ -98,31 +84,50 @@ def register():
 @bp.route("register/customer", methods=("GET", "POST"))
 def register_customer():
     if request.method == "POST":
-        username = g.username
-        password = g.password
-        first_name = g.first_name
-        last_name = g.last_name
-        user_type = g.user_type
+        username = session["username"]
+        password = session["password"]
+        first_name = session["first_name"]
+        last_name = session["last_name"]
+        building_number = request.form["building_number"]
+        street = request.form["street"]
+        city = request.form["city"]
+        state = request.form["state"]
+        phone_number = request.form["phone_number"]
+        passport_number = request.form["passport_number"]
+        passport_expiration = request.form["passport_expiration"]
+        passport_country = request.form["passport_country"]
+        date_of_birth = request.form["date_of_birth"]
 
         conn = get_db()
         cursor = conn.cursor(dictionary=True)
         error = None
 
-        query = "SELECT * FROM {} WHERE username = '{}'"
-        cursor.execute(query.format(user_type, username))
+        query = "SELECT * FROM customer WHERE username = '{}'"
+        cursor.execute(query.format(username))
         data = cursor.fetchone()
         if data is not None:
             error = f"User {username} is already registered."
         else:
             query = """
-                    INSERT INTO {} (username, password, first_name, last_name)
-                    VALUES('{}','{}','{}','{}')
+                    INSERT INTO customer (username, password, first_name, last_name, building_number, street, city, state, phone_number, passport_number, passport_expiration, passport_country, date_of_birth)
+                    VALUES('{}','{}','{}','{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}')
                     """
             cursor.execute(
-                user_type,
-                query.format(username, generate_password_hash(password)),
-                first_name,
-                last_name,
+                query.format(
+                    username,
+                    password,
+                    first_name,
+                    last_name,
+                    building_number,
+                    street,
+                    city,
+                    state,
+                    phone_number,
+                    passport_number,
+                    passport_expiration,
+                    passport_country,
+                    date_of_birth,
+                )
             )
             conn.commit()
             cursor.close()
