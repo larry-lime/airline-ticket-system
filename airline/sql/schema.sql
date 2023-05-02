@@ -27,22 +27,22 @@ DROP TABLE IF EXISTS airport;
 DROP TABLE IF EXISTS customer;
 
 -- Blog Tables
-CREATE TABLE
-  user(
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    username VARCHAR(255) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL
-  );
-
-CREATE TABLE
-  post (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    author_id INT NOT NULL,
-    created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    title TEXT NOT NULL,
-    body TEXT NOT NULL,
-    FOREIGN KEY (author_id) REFERENCES USER(id)
-  );
+-- CREATE TABLE
+--   user(
+--     id INT PRIMARY KEY AUTO_INCREMENT,
+--     username VARCHAR(255) UNIQUE NOT NULL,
+--     password VARCHAR(255) NOT NULL
+--   );
+--
+-- CREATE TABLE
+--   post (
+--     id INT PRIMARY KEY AUTO_INCREMENT,
+--     author_id INT NOT NULL,
+--     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+--     title TEXT NOT NULL,
+--     body TEXT NOT NULL,
+--     FOREIGN KEY (author_id) REFERENCES USER(id)
+--   );
 
 -- Airline Dashboard Tables
 CREATE TABLE
@@ -55,7 +55,7 @@ CREATE TABLE
 CREATE TABLE
   airline_staff (
     username VARCHAR(50) NOT NULL,
-    password VARCHAR(50) NOT NULL,
+    password VARCHAR(255) NOT NULL,
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
     date_of_birth DATE NOT NULL,
@@ -95,7 +95,7 @@ CREATE TABLE
 CREATE TABLE
   booking_agent (
     username VARCHAR(50) NOT NULL,
-    password VARCHAR(50) NOT NULL,
+    password VARCHAR(255) NOT NULL,
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
     booking_agent_id INT(11) NOT NULL,
@@ -116,14 +116,14 @@ CREATE TABLE
 CREATE TABLE
   customer (
     username VARCHAR(50) NOT NULL,
-    password VARCHAR(50) NOT NULL,
+    password VARCHAR(255) NOT NULL,
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
     building_number VARCHAR(30) NOT NULL,
     street VARCHAR(30) NOT NULL,
     city VARCHAR(30) NOT NULL,
     state VARCHAR(30) NOT NULL,
-    phone_number INT(11) NOT NULL,
+    phone_number VARCHAR(50) NOT NULL,
     passport_number VARCHAR(30) NOT NULL,
     passport_expiration DATE NOT NULL,
     passport_country VARCHAR(50) NOT NULL,

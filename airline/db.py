@@ -25,19 +25,40 @@ def close_db(e=None):
 def init_db():
     conn = get_db()
 
+    # Create tables
+    cursor = conn.cursor()
     with current_app.open_resource("sql/schema.sql") as f:
-        cursor = conn.cursor()
-        query = f.read().decode("utf8")
-        cursor.execute(query, multi=True)
+        queries = f.read().decode("utf8")
+        for query in queries.split(";"):
+            if query.strip():
+                cursor.execute(query)
+        conn.commit()
         data = cursor.fetchall()
-        print(data) if data else print("No returned data")
-        cursor.close()
+        print(data) if data else print("Tables Created")
+
+    cursor.close()
+
+
+def insert_sample_data():
+    conn = get_db()
+
+    cursor = conn.cursor()
+    with current_app.open_resource("sql/inserts.sql") as f:
+        queries = f.read().decode("utf8")
+        for query in queries.split(";"):
+            if query.strip():
+                cursor.execute(query)
+        conn.commit()
+        data = cursor.fetchall()
+        print(data) if data else print("Sample Data Inserted")
+    cursor.close()
 
 
 @click.command("init-db")
 def init_db_command():
     """Clear the existing data and create new tables."""
     init_db()
+    insert_sample_data()
     click.echo("Initialized the database.")
 
 
