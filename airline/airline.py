@@ -1,3 +1,8 @@
+import pandas as pd
+import json
+import plotly
+import plotly.express as px
+
 import datetime
 from flask import (
     Blueprint,
@@ -12,7 +17,7 @@ from flask import (
 
 from airline.auth import login_required, user_is_logged_in
 from airline.db import get_db
-from airline.util import get_tickets, get_user_info, get_flight, get_purchases
+from airline.util import *
 
 bp = Blueprint("airline", __name__)
 
@@ -29,7 +34,12 @@ def index():
     airports = cursor.fetchall()
     cursor.close()
 
-    purchases = get_purchases(g.user["username"], g.user_type) if user_is_logged_in() else None
+    purchases = None
+
+    if user_is_logged_in():
+        username = g.user["username"]
+        purchases = get_purchases(username, g.user_type)
+        graphJSON = plot_purchases_totals(username)
 
     if request.method == "POST":
         conn = get_db()
@@ -60,6 +70,7 @@ def index():
         "airline/index.html",
         airports=airports,
         purchases=purchases,
+        graphJSON=graphJSON,
     )
 
 

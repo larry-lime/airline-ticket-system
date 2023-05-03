@@ -85,6 +85,7 @@
       <div class="container md">
         <h1>My Flights</h1>
         {% for purchase in purchases %}
+ 
           <div class="card mb-3">
             <div class="card-header">
               <div class="row">
@@ -101,10 +102,27 @@
             </div>
           </div>
         {% endfor %}
+ 
       </div>
     </div>
-  <!--TODO: <script src="URL"> here!-->
+    <div class="container-lg-5 pt-3>
+      <div class="container md">
+        <h1>Purchase History</h1>
+        <div class="card mb-3">
+          <div class="card-header">
+            <div class="row">
+              <div id='chart' class='chart'”></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   {% endif %}
+  <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+  <script type='text/javascript'>
+  var graphs = {{ graphJSON | safe }};
+  Plotly.plot('chart',graphs,{});
+  </script>
   <script>
   const roundTripBtn = document.getElementById("round-trip-btn");
   const oneWayBtn = document.getElementById("one-way-btn");
