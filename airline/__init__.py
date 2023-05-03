@@ -12,7 +12,7 @@ def create_app():
         MYSQL_HOST="localhost",
         MYSQL_USER="root",
         MYSQL_PASSWORD=env_vars["MYSQL_PASSWORD"],
-        MYSQL_DB_NAME="flask_tutorial_blog",
+        MYSQL_DB_NAME="airline",
     )
 
     from . import db
