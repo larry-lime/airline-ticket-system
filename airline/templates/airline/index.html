@@ -14,7 +14,7 @@
         </h1>
       </div>
       <div class="col-sm-4 text-end">
-        {% if g.user %}<a class="btn btn-primary" href="{{ url_for('airline.create') }}">My Flights</a>{% endif %}
+        <a class="btn btn-primary" href="/">My Flights</a>
       </div>
     </div>
   </div>
@@ -79,6 +79,32 @@
       </div>
     </form>
   </div>
+  <!--NOTE: We can use 'if purchases is not None' as well-->
+  {% if g.user %}
+    <div class="container-lg-5 pt-3 >
+      <div class="container md">
+        <h1>My Flights</h1>
+        {% for purchase in purchases %}
+          <div class="card mb-3">
+            <div class="card-header">
+              <div class="row">
+                <div class="col-sm-8">
+                  <small class="text">{{ purchase['departure_time'] }} - {{ purchase['arrival_time'] }} ({{ purchase['status'] }})</small>
+                </div>
+                <div class="col-sm-8">
+                  <small class="text-muted">{{ purchase['departure_city'] }} ({{ purchase['departure_airport'] }})- {{ purchase['arrival_city'] }} ({{ purchase['arrival_airport'] }})</small>
+                </div>
+                <div class="col-sm-4 text-end">
+                  <small class="text-muted">{{ purchases['airline_name'] }}</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  <!--TODO: <script src="URL"> here!-->
+  {% endif %}
   <script>
   const roundTripBtn = document.getElementById("round-trip-btn");
   const oneWayBtn = document.getElementById("one-way-btn");

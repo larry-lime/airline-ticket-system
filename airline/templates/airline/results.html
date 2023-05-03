@@ -6,7 +6,7 @@
         <h1>Search Results</h1>
       </div>
       <div class="col-sm-4 text-end">
-        {% if g.user %}<a class="btn btn-primary" href="{{ url_for('airline.create') }}">My Flights</a>{% endif %}
+        <a class="btn btn-primary" href="/">My Flights</a>
       </div>
     </div>
   </div>
@@ -79,7 +79,7 @@
   </script>
 {% endblock %}
 {% block content %}
-  <!--TODO: Remove this! -->
+  <!--TODO: There is a weird container thing here -->
   <div class="container-lg-5 pt-3 >
     <div class="container md">
       {% for flight in flights %}
@@ -101,9 +101,13 @@
             <!--TODO: Maybe display an average of all the prices for that flight instead of one ticket price-->
             <!--or don't display the price at all and make these searh results for tickets OR flights. Make id clear -->
             <p class="card-text">USD ${{ flight['price'] }}</p>
-            <a class="action" href="{{ url_for('airline.purchase_ticket', id=flight['flight_num']) }}">Purchase</a>
+            {% if g.user  %}
+              <a class="action"
+                 href="{{ url_for('airline.purchase_ticket', id=flight['flight_num']) }}">Purchase</a>
+            {% endif %}
           </div>
         </div>
       {% endfor %}
     </div>
-  {% endblock %}
+  </div>
+{% endblock %}

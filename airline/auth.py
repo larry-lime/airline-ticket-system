@@ -2,7 +2,6 @@ import functools
 
 from flask import (
     Blueprint,
-    current_app,
     flash,
     g,
     redirect,
@@ -28,6 +27,9 @@ def login_required(view):
 
     return wrapped_view
 
+def user_is_logged_in():
+    return g.user is not None
+
 
 @bp.before_app_request
 def load_logged_in_user():
@@ -51,19 +53,15 @@ def load_logged_in_user():
 @bp.route("/register", methods=("GET", "POST"))
 def register():
     if request.method == "POST":
-        username = session["username"] = request.form["username"]
-        password = session["password"] = generate_password_hash(
-            request.form["password"]
-        )
+        session["username"] = username = request.form["username"]
+        session["user_type"] = user_type = request.form["user_type"]
+        session["password"] = generate_password_hash(request.form["password"])
         session["first_name"] = request.form["first_name"]
         session["last_name"] = request.form["last_name"]
-        user_type = session["user_type"] = request.form["user_type"]
 
         conn = get_db()
         cursor = conn.cursor(dictionary=True)
         error = None
-
-        # check if username is in the form of an email
 
         # Check if username is already registered
         query = "SELECT * FROM {} WHERE username = '{}'"
@@ -71,16 +69,17 @@ def register():
         data = cursor.fetchone()
 
         # If username is not registered, redirect to the appropriate registration page
-        if "@" not in username and user_type in ['customer', 'booking_agent']:
-            error = "Username must be an email address."
-        elif data is not None:
+        if data is not None:
             error = f"User {username} is already registered."
+
         elif user_type == "airline_staff":
             return redirect(url_for("auth.register_staff"))
         elif user_type == "booking_agent":
             return redirect(url_for("auth.register_agent"))
         elif user_type == "customer":
             return redirect(url_for("auth.register_customer"))
+        else:
+            error = "Invalid user type."
 
         flash(error)
 
@@ -234,7 +233,7 @@ def register_agent():
 @bp.route("/login", methods=("GET", "POST"))
 def login():
     if request.method == "POST":
-        username = request.form["username"]
+        username: str = request.form["username"]
         password = request.form["password"]
         user_type = request.form["user_type"]
 
@@ -250,8 +249,7 @@ def login():
             error = "Incorrect username."
         elif not check_password_hash(user["password"], password):
             error = "Incorrect password."
-
-        if error is None:
+        else:
             session.clear()
             session["username"] = user["username"]
             session["user_type"] = user_type
