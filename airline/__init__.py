@@ -11,7 +11,7 @@ def create_app():
         SECRET_KEY="dev",
         MYSQL_HOST="localhost",
         MYSQL_USER="root",
-        MYSQL_PASSWORD=env_vars["MYSQL_PASSWORD"],
+        MYSQL_PASSWORD='',
         MYSQL_DB_NAME="airline",
     )
 
