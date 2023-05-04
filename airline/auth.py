@@ -27,6 +27,7 @@ def login_required(view):
 
     return wrapped_view
 
+
 def user_is_logged_in():
     return g.user is not None
 
