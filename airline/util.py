@@ -1,5 +1,11 @@
 from airline.db import get_db
 from werkzeug.exceptions import abort
+from flask import flash
+
+import pandas as pd
+import json
+import plotly
+import plotly.express as px
 
 
 def get_tickets(flight_num):
@@ -18,7 +24,70 @@ def get_tickets(flight_num):
 
     return tickets
 
-def get_purchases(username,user_type):
+
+def load_purchases(username):
+    conn = get_db()
+    cursor = conn.cursor(dictionary=True)
+    # Get the sum of purchases for the last 6 months
+
+    # TODO: Allow user to get purchases for a custom date range
+    query = """
+            SELECT MONTH(purchase_date) as month,
+                   SUM(price)           as total
+            FROM (SELECT purchase_date,
+                         price,
+                         customer_email
+                  FROM purchases
+                           NATURAL JOIN ticket
+                           NATURAL JOIN flight
+                  WHERE customer_email = '{}'
+                    AND purchase_date > DATE_SUB(NOW(), INTERVAL 6 MONTH)) as t
+            GROUP BY month;
+            """
+    # Get all the available tickets for a given flight
+    cursor.execute(query.format(username))
+    purchases = cursor.fetchall()
+    cursor.close()
+    return purchases
+
+
+def plot_purchases_totals(username):
+    amount_per_month = [0 for _ in range(12)]
+    for purchase in load_purchases(username):
+        amount_per_month[purchase["month"] - 1] = purchase["total"]
+
+    # Show the total amount of purchases for the last 6 months
+    # get current month
+    this_month = pd.Timestamp.now().month
+
+    months = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+    ]
+
+    df = pd.DataFrame(
+        {
+            "$USD Amount": [
+                amount_per_month[i] for i in range(this_month - 6, this_month)
+            ],
+            "Months": [months[i] for i in range(this_month - 6, this_month)],
+        }
+    )
+    fig = px.bar(df, x="Months", y="$USD Amount", barmode="group")
+    return json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+
+
+def get_purchases(username, user_type):
     conn = get_db()
     cursor = conn.cursor(dictionary=True)
     query = """

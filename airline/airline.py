@@ -1,3 +1,8 @@
+import pandas as pd
+import json
+import plotly
+import plotly.express as px
+
 import datetime
 from flask import (
     Blueprint,
@@ -12,9 +17,15 @@ from flask import (
 
 from airline.auth import login_required, user_is_logged_in
 from airline.db import get_db
-from airline.util import get_tickets, get_user_info, get_flight, get_purchases
+from airline.util import *
 
 bp = Blueprint("airline", __name__)
+
+
+# TODO: Update this and populate this with content when the post() table is updated with actual content
+@bp.route("/<int:post_id>/post", methods=("GET", "POST"))
+def post(post_id):
+    return render_template("airline/post.html", post_id=post_id)
 
 
 @bp.route("/", methods=("GET", "POST"))
@@ -28,8 +39,35 @@ def index():
     cursor.execute(query)
     airports = cursor.fetchall()
     cursor.close()
+    # TODO: Remove this when the post() function above is finished and when there is actual post content in the database
+    posts = [
+        {
+            "id": 1,
+            "title": "Welcome to Airline",
+            "summary": "This is a website for airline reservation",
+            "image_url": "https://www.wikihow.com/images/thumb/6/65/Italicize-Text-in-HTML-Step-1.jpg/aid2477375-v4-677px-Italicize-Text-in-HTML-Step-1.jpg",
+        },
+        {
+            "id": 2,
+            "title": "New Routes Added!",
+            "summary": "We have added new routes to our list of destinations.",
+            "image_url": "https://www.wikihow.com/images/thumb/6/65/Italicize-Text-in-HTML-Step-1.jpg/aid2477375-v4-677px-Italicize-Text-in-HTML-Step-1.jpg",
+        },
+        {
+            "id": 2,
+            "title": "Travel Tips",
+            "summary": "Here are some helpful tips for making your air travel experience more comfortable and enjoyable.",
+            "image_url": "https://www.wikihow.com/images/thumb/6/65/Italicize-Text-in-HTML-Step-1.jpg/aid2477375-v4-677px-Italicize-Text-in-HTML-Step-1.jpg",
+        },
+    ]
 
-    purchases = get_purchases(g.user["username"], g.user_type) if user_is_logged_in() else None
+    purchases = None
+    graphJSON = None
+
+    if user_is_logged_in():
+        username = g.user["username"]
+        purchases = get_purchases(username, g.user_type)
+        graphJSON = plot_purchases_totals(username)
 
     if request.method == "POST":
         conn = get_db()
@@ -60,6 +98,8 @@ def index():
         "airline/index.html",
         airports=airports,
         purchases=purchases,
+        graphJSON=graphJSON,
+        posts=posts,
     )
 
 
