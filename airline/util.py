@@ -30,6 +30,7 @@ def load_purchases(username):
     cursor = conn.cursor(dictionary=True)
     # Get the sum of purchases for the last 6 months
 
+    # TODO: Allow user to get purchases for a custom date range
     query = """
             SELECT MONTH(purchase_date) as month,
                    SUM(price)           as total
@@ -76,7 +77,9 @@ def plot_purchases_totals(username):
 
     df = pd.DataFrame(
         {
-            "$USD Amount": [amount_per_month[i] for i in range(this_month - 6, this_month)],
+            "$USD Amount": [
+                amount_per_month[i] for i in range(this_month - 6, this_month)
+            ],
             "Months": [months[i] for i in range(this_month - 6, this_month)],
         }
     )
