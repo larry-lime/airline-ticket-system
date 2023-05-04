@@ -10,6 +10,7 @@
       </div>
     </div>
   </div>
+  <!--Search Bar-->
   <div class="container-lg-5 pt-3 border rounded p-3">
     <form method="post">
       <div class="row d-flex justify-content-right align-items-center">
@@ -79,35 +80,37 @@
   </script>
 {% endblock %}
 {% block content %}
-  <!--TODO: There is a weird container thing here -->
-  <div class="container-lg-5 pt-3 >
-    <div class="container md">
-      {% for flight in flights %}
-        <div class="card mb-3">
-          <div class="card-header">
-            <div class="row">
-              <div class="col-sm-8">
-                <small class="text">{{ flight['departure_time'] }} - {{ flight['arrival_time'] }} ({{ flight['status'] }})</small>
-              </div>
-              <div class="col-sm-8">
-                <small class="text-muted">{{ flight['departure_city'] }} ({{ flight['departure_airport'] }})- {{ flight['arrival_city'] }} ({{ flight['arrival_airport'] }})</small>
-              </div>
-              <div class="col-sm-4 text-end">
-                <small class="text-muted">{{ flight['airline_name'] }}</small>
-              </div>
+
+  <!--Search Results-->
+  <div class="container-lg-5 pt-3">
+    {% for flight in flights %}
+      <div class="card mb-3">
+        <div class="card-header">
+          <div class="row">
+            <div class="col-sm-8">
+              <small class="text">{{ flight['departure_time'] }} - {{ flight['arrival_time'] }} ({{ flight['status'] }})</small>
+            </div>
+            <div class="col-sm-4 text-end">
+              <strong class="card-text">${{ flight['price'] }} USD</strong>
+            </div>
+            <div class="col-sm-8">
+              <small class="text-muted">{{ flight['departure_city'] }} ({{ flight['departure_airport'] }})- {{ flight['arrival_city'] }} ({{ flight['arrival_airport'] }})</small>
+            </div>
+            <div class="col-sm-4 text-end">
+              <small class="text-muted">{{ flight['airline_name'] }} Airlines</small>
             </div>
           </div>
-          <div class="card-body">
-            <!--TODO: Maybe display an average of all the prices for that flight instead of one ticket price-->
-            <!--or don't display the price at all and make these searh results for tickets OR flights. Make id clear -->
-            <p class="card-text">USD ${{ flight['price'] }}</p>
-            {% if g.user  %}
-              <a class="action"
-                 href="{{ url_for('airline.purchase_ticket', id=flight['flight_num']) }}">Purchase</a>
-            {% endif %}
-          </div>
         </div>
-      {% endfor %}
-    </div>
+        <div class="card-body">
+          <!--TODO: Maybe display an average of all the prices for that flight instead of one ticket price-->
+          <!--or don't display the price at all and make these searh results for tickets OR flights. Make id clear -->
+          {% if g.user  %}
+            <a href="{{ url_for('airline.purchase_ticket', id=flight['flight_num']) }}">
+              <button class="btn btn-primary">Purchase</button>
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
   </div>
 {% endblock %}
