@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <div class="container my-4">
+        <div class="row">
+        <div class="col-sm-8">
+            <h1>
+            {% block title %}Grant New Permission{% endblock %}
+            </h1>
+        </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+  <div class="container my-4">
+    <div class="row">
+      <div class="col-lg-6">
+        <form action='/grant_new_permission' method="post">
+            <div class="mb-3">
+                <select class="form-select" id="username" name="username">
+                  <option value="" disabled selected hidden>Choose Staff username...</option>
+                  {% for username in usernames %}
+                    <option value="{{username['username']}}">{{ username['username'] }}</option>
+                  {% endfor %}
+                </select>
+            </div>
+            <br>
+            <div class="mb-3">
+                <select class="form-select" id="permission_type" name="permission_type">
+                    <option value="" disabled selected hidden>Choose Permission...</option>
+                    <option value="admin">admin</option>
+                    <option value="write">write</option>
+                    <option value="read">read</option>
+                  </select>
+            </div>
+          <button type="submit" class="btn btn-primary">Change</button>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}

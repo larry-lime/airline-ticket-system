@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <div class="container my-4">
+        <div class="row">
+        <div class="col-sm-8">
+            <h1>
+            {% block title %}Add New Airport{% endblock %}
+            </h1>
+        </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+  <div class="container my-4">
+    <div class="row">
+      <div class="col-lg-6">
+        <form action='/add_new_airport' method="post">
+          <div class="mb-3">
+            <label for="airport_name" class="form-label">Airport name:</label>
+            <input name="airport_name" id="airport_name" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label for="airport_city" class="form-label">Airport cityr:</label>
+            <input name="airport_city" id="airport_city" class="form-control" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Create</button>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}

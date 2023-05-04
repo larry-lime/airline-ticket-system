@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <div class="container my-4">
+        <div class="row">
+        <div class="col-sm-8">
+            <h1>
+            {% block title %}Change Flight Status{% endblock %}
+            </h1>
+        </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+  <div class="container my-4">
+    <div class="row">
+      <div class="col-lg-6">
+        <form action='/change_status' method="post">
+            <div class="mb-3">
+                <select class="form-select" id="flight_num" name="flight_num">
+                  <option value="" disabled selected hidden>Choose Flight Number...</option>
+                  {% for flight_num in flight_nums %}
+                    <option value="{{flight_num['flight_num']}}">{{ flight_num['flight_num'] }}</option>
+                  {% endfor %}
+                </select>
+            </div>
+            <br>
+            <div class="mb-3">
+                <select class="form-select" id="STATUS" name="STATUS">
+                    <option value="" disabled selected hidden>Choose STATUS...</option>
+                    <option value="On Time">On Time</option>
+                    <option value="Delayed">Delayed</option>
+                  </select>
+            </div>
+          <button type="submit" class="btn btn-primary">Change</button>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}
