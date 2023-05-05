@@ -82,6 +82,101 @@ def index():
         flights = cursor.fetchall()
         cursor.close()
 
+        # view top 5 agent
+        conn = get_db()
+        cursor = conn.cursor(dictionary=True)
+        query = '''
+                SELECT DISTINCT b1.username
+                FROM booking_agent as b1 
+                JOIN purchases as p1 on b1.booking_agent_id = p1.booking_agent_id
+                JOIN booking_agent_work_for as bw on b1.username = bw.email
+                WHERE bw.airline_name = '{}' and 
+                p1.purchase_date >= (NOW() - INTERVAL 1 MONTH)
+                GROUP BY b1.booking_agent_id
+                ORDER BY COUNT(*) DESC
+                LIMIT 5
+                '''
+        cursor.execute(query.format(airline_name))
+        month_top_booking_agents = cursor.fetchall()
+        cursor.close()
+
+        conn = get_db()
+        cursor = conn.cursor(dictionary=True)
+        error = None
+
+        query = '''
+                SELECT DISTINCT b1.username
+                FROM booking_agent as b1 
+                JOIN purchases as p1 on b1.booking_agent_id = p1.booking_agent_id
+                JOIN booking_agent_work_for as bw on b1.username = bw.email
+                WHERE bw.airline_name = '{}' and 
+                p1.purchase_date >= (NOW() - INTERVAL 1 YEAR)
+                GROUP BY b1.booking_agent_id
+                ORDER BY COUNT(*) DESC
+                LIMIT 5
+                '''
+        cursor.execute(query.format(airline_name))
+        year_top_booking_agents = cursor.fetchall()
+        cursor.close()
+
+        #view top customers
+        conn = get_db()
+        cursor = conn.cursor(dictionary=True)
+        error = None
+
+        query = '''
+                SELECT *
+                FROM purchases as p NATURAL JOIN ticket as t NATURAL JOIN flight
+                WHERE t.airline_name = '{}' and 
+                p.purchase_date >= (NOW() - INTERVAL 1 YEAR)
+                GROUP BY p.customer_email
+                ORDER BY COUNT(*) DESC
+                LIMIT 5
+                '''
+        cursor.execute(query.format(airline_name))
+        frequent_customers = cursor.fetchall()
+        cursor.close()
+
+        # view top destinaions
+        conn = get_db()
+        cursor = conn.cursor(dictionary=True)
+        error = None
+
+        query = '''
+                SELECT DISTINCT a.airport_city
+                FROM flight as f 
+                JOIN (ticket NATURAL JOIN purchases) on ticket.flight_num = f.flight_num
+                JOIN airport as a on f.arrival_airport = a.airport_name
+                WHERE ticket.airline_name = '{}' and 
+                purchases.purchase_date >= (NOW() - INTERVAL 1 YEAR)
+                GROUP BY f.arrival_airport
+                ORDER BY COUNT(*) DESC
+                LIMIT 3
+                '''
+        cursor.execute(query.format(airline_name))
+        year_top_destinations = cursor.fetchall()
+        cursor.close()
+
+        conn = get_db()
+        cursor = conn.cursor(dictionary=True)
+        error = None
+
+        query = '''
+                SELECT DISTINCT a.airport_city
+                FROM flight as f 
+                JOIN (ticket NATURAL JOIN purchases) on ticket.flight_num = f.flight_num
+                JOIN airport as a on f.arrival_airport = a.airport_name
+                WHERE ticket.airline_name = '{}' and 
+                purchases.purchase_date >= (NOW() - INTERVAL 3 MONTH)
+                GROUP BY f.arrival_airport
+                ORDER BY COUNT(*) DESC
+                LIMIT 3
+                '''
+        cursor.execute(query.format(airline_name))
+        month_top_destinations = cursor.fetchall()
+        cursor.close()
+
+
     if g.user_type == "customer":
         purchases = (
             customer_get_purchases(username, g.user_type)
@@ -137,6 +232,11 @@ def index():
             flights=flights,
             graphJSON=graphJSON,
             posts=posts,
+            month_top_booking_agents=month_top_booking_agents,
+            year_top_booking_agents=year_top_booking_agents,
+            frequent_customers=frequent_customers,
+            year_top_destinations=year_top_destinations,
+            month_top_destinations=month_top_destinations
         )
     else:
         return render_template(
@@ -229,8 +329,19 @@ def search_results():
                 FROM flight as f
                 JOIN airport as a1 on f.departure_airport = a1.airport_name
                 JOIN airport as a2 on f.arrival_airport = a2.airport_name
+                WHERE (f.departure_airport = '{}' and f.arrival_airport = '{}')
+                or (f.departure_airport = '{}' and f.arrival_airport = '{}' and f.departure_time ='{}')
+                or (f.departure_airport = '{}' and f.arrival_airport = '{}' and f.departure_time ='{}')
                 """
-        cursor.execute(query)
+        cursor.execute(query.format(leaving_from_airport,
+                going_to_airport,
+                leaving_from_airport,
+                going_to_airport,
+                departure_date,
+                going_to_airport,
+                leaving_from_airport,
+                return_date))
+        
         flights = cursor.fetchall()
         cursor.close()
 
@@ -290,7 +401,6 @@ def purchase_ticket(id):
         user_info = get_user_info(g.user["username"], g.user_type)
         ticket_id = request.form["ticket"]
         purchase_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        booking_agent_id = g.user["booking_agent_id"]
         error = None
 
         if g.user_type == "customer":
@@ -307,6 +417,7 @@ def purchase_ticket(id):
             cursor.close()
 
         elif g.user_type == "booking_agent":
+            booking_agent_id = g.user["booking_agent_id"]
             session["customer_email"] = customer_email = request.form["customer_email"]
             conn = get_db()
             cursor = conn.cursor()
@@ -632,6 +743,7 @@ def add_booking_agent():
         first_name = request.form["first_name"]
         last_name = request.form["last_name"]
         booking_agent_id = request.form["booking_agent_id"]
+        airline_name = request.form['airline_name']
 
         conn = get_db()
         cursor = conn.cursor(dictionary=True)
@@ -657,8 +769,24 @@ def add_booking_agent():
                     booking_agent_id,
                 )
             )
+            
             conn.commit()
             cursor.close()
+
+            conn = get_db()
+            cursor = conn.cursor(dictionary=True)
+            error = None
+
+            query = """
+            INSERT INTO booking_agent_work_for
+            (email, airline_name)
+            VALUES ('{}','{}')
+            """
+            cursor.execute(query.format(username, airline_name))
+            conn.commit()
+            cursor.close()
+
+
             return redirect(url_for("airline.index"))
 
         conn.commit()

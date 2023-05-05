@@ -164,6 +164,7 @@
 
     <!--Purchase History-->
     <!--FIXME: Graph overflowing out of container. Center?-->
+    {% if g.user_type == 'customer' %}
     <div class="container-lg-5 pt-3">
       <h1>Purchase History</h1>
     </div>
@@ -202,10 +203,83 @@
         </div>
       </div>
     </div>
+    {% endif %}
+
+    <!-- View all booking agent -->
+    {% if g.user_type == 'airline_staff' %}
+      <div class="container-lg-5 pt-3">
+        <h1>Top 5 booking agent</h1>
+        <br>
+          <h2> Top 5 Booking Agent in One Month</h2>
+          <br>
+          <ol type="1">
+            {% for month_top_booking_agent in month_top_booking_agents %}
+            <h3><li>{{month_top_booking_agent['username']}}</li></h3>
+            {% endfor %}
+          </ol>
+          <br>
+          <h2> Top 5 Booking Agent in One Year</h2>
+          <br>
+          <ol type="1">
+            {% for year_top_booking_agent in year_top_booking_agents %}
+            <h3><li>{{year_top_booking_agent['username']}}</li></h3>
+            {% endfor %}
+          </ol>
+      </div>
+      <br>
+
+      <!-- view top customers -->
+      <div class="container-lg-5 pt-3">
+        <h1>Top 5 Customer</h1>
+        <br>
+        <ol type="1">
+          {% for frequent_customer in frequent_customers %}
+          <h3><li>{{frequent_customer['customer_email']}}</li></h3>
+          <div class="card mb-3">
+            <div class="card-header">
+              <div class="row">
+                <div class="col-sm-8">
+                  <small class="text">{{ frequent_customer['departure_time'] }} - {{ frequent_customer['arrival_time'] }} ({{ frequent_customer['STATUS'] }})</small>
+                </div>
+                <div class="col-sm-8">
+                  <small class="text-muted">{{ frequent_customer['departure_city'] }} ({{ frequent_customer['departure_airport'] }})- {{ frequent_customer['arrival_city'] }} ({{ frequent_customer['arrival_airport'] }})</small>
+                </div>
+                <div class="col-sm-4 text-end">
+                  <small class="text-muted">{{ frequent_customer['airline_name'] }}</small>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </ol>
+      </div>
+
+      <!-- view top destinations  -->
+      <div class="container-lg-5 pt-3">
+        <h1>Top 3 Destinations</h1>
+        <br>
+          <h2> Top 3 Destinations in One Year</h2>
+          <br>
+          <ol type="1">
+            {% for year_top_destination in year_top_destinations %}
+            <h3><li>{{year_top_destination['airport_city']}}</li></h3>
+            {% endfor %}
+          </ol>
+          <br>
+          <h2> Top 3 Destinations in Three Month</h2>
+          <br>
+          <ol type="1">
+            {% for month_top_destination in month_top_destinations %}
+            <h3><li>{{month_top_destination['airport_city']}}</li></h3>
+            {% endfor %}
+          </ol>
+      </div>
+    {% endif %}
 
 
     <!--TODO: <script src="URL"> here!-->
   {% endif %}
+  <!-- Purchase history -->
   <div class="container-lg-5 pt-3">
     <h1>Blog Posts</h1>
     <div class="row row-cols-1 row-cols-md-3 g-4">
