@@ -38,7 +38,7 @@ def index():
                 SELECT *
                 FROM flight
                 WHERE airline_name = '{}' and 
-                departure_time >= ( NOW( ) + INTERVAL 1 MONTH )
+                departure_time <= ( NOW( ) + INTERVAL 1 MONTH )
                 """
         cursor.execute(query.format(airline_name))
         flights = cursor.fetchall()
@@ -74,7 +74,6 @@ def index():
             )
 
         flash(error)
-
     if purchases is not None:
         return render_template(
             "airline/index.html",
@@ -129,15 +128,19 @@ def search_results():
                     airplane_id,
                     a1.airport_city as departure_city,
                     a2.airport_city as arrival_city, 
-                    customer_email
+                    (SELECT purchases.customer_email FROM ticket NATURAL JOIN purchases
+                    WHERE ticket.flight_num = f.flight_num) as customer_email
                 FROM flight as f
-                NATURAL JOIN (ticket NATURAL JOIN purchases)
                 JOIN airport as a1 on f.departure_airport = a1.airport_name
                 JOIN airport as a2 on f.arrival_airport = a2.airport_name
-                WHERE airline_name = '{}' and 
-                departure_time >= ( NOW( ) + INTERVAL 1 MONTH )
+                WHERE airline_name = '{}' 
+                and (f.departure_airport = '{}' and f.arrival_airport = '{}')
+                or (f.departure_airport = '{}' and f.arrival_airport = '{}' and f.departure_time ='{}')
+                or (f.departure_airport = '{}' and f.arrival_airport = '{}' and f.departure_time ='{}')
                 """
-        cursor.execute(query.format(airline_name))
+        cursor.execute(query.format(airline_name, leaving_from_airport, going_to_airport,\
+                                    leaving_from_airport, going_to_airport,departure_date,\
+                                    going_to_airport, leaving_from_airport,return_date))
         flights = cursor.fetchall()
         cursor.close()
 
