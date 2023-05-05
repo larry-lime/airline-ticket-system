@@ -1,18 +1,21 @@
 from flask import Flask
 from dotenv import dotenv_values
 
-env_vars = dotenv_values(".env")
+# env_vars = dotenv_values(".env")
+import os
 
 
 def create_app():
     app = Flask(__name__)
-    # create and configure the app
+# create and configure the app
     app.config.from_mapping(
         SECRET_KEY="dev",
-        MYSQL_HOST="localhost",
-        MYSQL_USER="root",
-        MYSQL_PASSWORD='',
-        MYSQL_DB_NAME="airline",
+        MYSQL_URL=os.getenv("MYSQL_URL"),
+        MYSQLDATABASE=os.getenv("MYSQLDATABASE"),
+        MYSQLHOST=os.getenv("MYSQLHOST"),
+        MYSQLPASSWORD=os.getenv("MYSQLPASSWORD"),
+        MYSQLPORT=os.getenv("MYSQLPORT"),
+        MYSQLUSER=os.getenv("MYSQLUSER"),
     )
 
     from . import db

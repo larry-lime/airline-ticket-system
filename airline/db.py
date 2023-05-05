@@ -8,10 +8,12 @@ from gpt4free import theb
 def get_db():
     if "db" not in g:
         g.db = mysql.connector.connect(
-            host=current_app.config["MYSQL_HOST"],
-            user=current_app.config["MYSQL_USER"],
-            password=current_app.config["MYSQL_PASSWORD"],
-            database=current_app.config["MYSQL_DB_NAME"],
+            host=current_app.config["MYSQLHOST"],
+            user=current_app.config["MYSQLUSER"],
+            password=current_app.config["MYSQLPASSWORD"],
+            database=current_app.config["MYSQLDATABASE"],
+            port=current_app.config["MYSQLPORT"],
+
         )
     return g.db
 
