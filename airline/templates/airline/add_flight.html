@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <div class="container my-4">
+    <div class="row">
+      <div class="col-sm-8">
+        <h1>
+          {% block title %}Create New Flight{% endblock %}
+        </h1>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block content %}
+  <div class="container my-4">
+    <div class="row">
+      <div class="col-lg-6">
+        <form action='/add_flight' method="post">
+          <div class="mb-3">
+            <label for="flight_num" class="form-label">Flight Number:</label>
+            <input id="flight_num" name="flight_num" class=""form-control>
+          </div>
+          <div class="mb-3">
+            <label for="departure_airport" class="form-label">Departure airport:</label>
+            <input name="departure_airport"
+                   id="departure_airport"
+                   class="form-control"
+                   required>
+          </div>
+          <div class="mb-3">
+            <label for="departure_time" class="form-label">Departure time:</label>
+            <input type="datetime-local"
+                   id="departure_time"
+                   name="departure_time"
+                   required>
+          </div>
+          <div class="mb-3">
+            <label for="arrival_airport" class="form-label">Arrival airport:</label>
+            <input name="arrival_airport"
+                   id="arrival_airport"
+                   class="form-control"
+                   required>
+          </div>
+          <div class="mb-3">
+            <label for="arrival_time" class="form-label">Arrival time:</label>
+            <input type="datetime-local" id="arrival_time" name="arrival_time" required>
+          </div>
+          <div class="mb-3">
+            <label for="price" class="price">Ticket Price:</label>
+            <input name="price" id="price" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label for="STATUS" class="form-label">STATUS:</label>
+            <input name="STATUS" id="STATUS" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label for="airplane_id" class="form-label">Airplane id:</label>
+            <input name="airplane_id" id="airplane_id" class="form-control" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Create</button>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}

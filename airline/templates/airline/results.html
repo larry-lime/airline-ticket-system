@@ -100,14 +100,22 @@
               <small class="text-muted">{{ flight['airline_name'] }} Airlines</small>
             </div>
           </div>
+          {% if g.user_type == 'airline_staff' %}
+            <div class="card-body">
+              <p class="card-text">USD ${{ flight['price'] }}</p>
+              <p class="card-text">Customer : {{ flight['customer_email'] }}</p>
+            </div>
+          {% endif %}
         </div>
         <div class="card-body">
           <!--TODO: Maybe display an average of all the prices for that flight instead of one ticket price-->
           <!--or don't display the price at all and make these searh results for tickets OR flights. Make id clear -->
           {% if g.user  %}
-            <a href="{{ url_for('airline.purchase_ticket', id=flight['flight_num']) }}">
-              <button class="btn btn-primary">Purchase</button>
-            </a>
+            {% if g.user_type != 'airline_staff' %}
+              <a href="{{ url_for('airline.purchase_ticket', id=flight['flight_num']) }}">
+                <button class="btn btn-primary">Purchase</button>
+              </a>
+            {% endif %}
           {% endif %}
         </div>
       </div>

@@ -192,6 +192,7 @@ def register_staff():
 
 @bp.route("/register/agent", methods=("GET", "POST"))
 def register_agent():
+    # TODO: Add a field for booking agent to fill out which airline they work for
     if request.method == "POST":
         username = session["username"]
         password = session["password"]
