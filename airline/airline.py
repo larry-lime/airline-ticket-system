@@ -35,11 +35,15 @@ def post(post_id):
 @bp.route("/", methods=("GET", "POST"))
 def index():
     airports = get_airports()
+    delete_ticket_id = request.args.get("delete_ticket_id")
     username = g.user["username"] if user_is_logged_in() else None
     purchases = graphJSON = flights = None
     month_top_booking_agents = year_top_booking_agents = frequent_customers = None
     year_top_destinations = month_top_destinations = None
     posts = []
+
+    if delete_ticket_id is not None:
+        refund(delete_ticket_id)
 
     if g.user_type == "airline_staff":
         airline_name = g.user["airline_name"]
@@ -71,7 +75,7 @@ def index():
         departure_date = request.form.get("departure_date")
         return_date = request.form.get("return_date")
 
-        error = error_check_homepage(
+        error = error_check_search(
             leaving_from_airport, going_to_airport, departure_date
         )
 
@@ -105,65 +109,47 @@ def index():
 
 @bp.route("/search", methods=("GET", "POST"))
 def search_results():
-    # NOTE: Some args can be none
+    get_all_flights = request.args.get("search_all_flights")
     going_to_airport = request.args.get("going_to_airport")
     leaving_from_airport = request.args.get("leaving_from_airport")
     departure_date = request.args.get("departure_date")
     return_date = request.args.get("return_date")
 
     airports = get_airports()
-    all_flight_search = False
-
     flights = []
-    error = None
 
-    if (
-        going_to_airport is None
-        and leaving_from_airport is None
-        and departure_date is None
-        and return_date is None
-    ):
-        all_flight_search = True
-    elif not going_to_airport:
-        error = "Going to airport is required."
-    elif not leaving_from_airport:
-        error = "Leaving from airport is required."
+    if get_all_flights is not None and get_all_flights == "True":
+        flights = search_all_flights()
 
-    if error is None:
-        # Check user types
-        if all_flight_search:
-            flights = search_all_flights()
-        elif g.user_type == "airline_staff":
-            airline_name = g.user["airline_name"]
-            flights = search_as_airline_staff(
-                airline_name,
-                going_to_airport,
-                leaving_from_airport,
-                departure_date,
-                return_date,
-            )
-        else:  # NOTE: Customers and Booking Agents search like anon users
-            flights = general_search(
-                leaving_from_airport,
-                going_to_airport,
-                departure_date,
-                return_date,
-            )
+    elif g.user_type == "airline_staff":
+        airline_name = g.user["airline_name"]
+        flights = search_as_airline_staff(
+            airline_name,
+            going_to_airport,
+            leaving_from_airport,
+            departure_date,
+            return_date,
+        )
     else:
-        flash(error)
+        flights = general_search(
+            leaving_from_airport,
+            going_to_airport,
+            departure_date,
+            return_date,
+        )
 
     if request.method == "POST":
         error = None
 
         # TODO: Change this to not use session variables
-        going_to_airport = session["going_to"] = request.form.get("going_to")
-        leaving_from_airport = session["leaving_from"] = request.form.get(
-            "leaving_from"
-        )
-        departure_date = session["departure_date"] = request.form.get("departure_date")
-        return_date = session["return_date"] = request.form.get("return_date")
+        going_to_airport = request.form.get("going_to")
+        leaving_from_airport = request.form.get("leaving_from")
+        departure_date = request.form.get("departure_date")
+        return_date = request.form.get("return_date")
 
-        # TODO: Add error checking here
+        error = error_check_search(
+            leaving_from_airport, going_to_airport, departure_date
+        )
 
         if error is None:
             return redirect(
@@ -191,7 +177,6 @@ def search_results():
 
 @bp.route("/<int:id>/purchase", methods=("GET", "POST"))
 @login_required
-# customer purchase_ticket
 def purchase_ticket(id):
     conn = get_db()
     cursor = conn.cursor(dictionary=True)
@@ -209,7 +194,6 @@ def purchase_ticket(id):
         user_info = get_user_info(g.user["username"], g.user_type)
         ticket_id = request.form["ticket"]
         purchase_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        error = None
 
         if g.user_type == "customer":
             conn = get_db()
@@ -239,9 +223,7 @@ def purchase_ticket(id):
             conn.commit()
             cursor.close()
 
-        # TODO: This should redirect to 'My Flights'
-        if error is None:
-            return redirect(url_for("airline.index"))
+        return redirect(url_for("airline.index"))
 
     return render_template(
         "airline/purchase_ticket.html",
@@ -249,19 +231,6 @@ def purchase_ticket(id):
         tickets=tickets,
         customers=customers,
     )
-
-
-@bp.route("/<int:id>/delete", methods=("POST",))
-@login_required
-def refund(id):
-    get_tickets(id)
-    conn = get_db()
-    cursor = conn.cursor()
-    query = "DELETE FROM post WHERE id = '{}'"
-    cursor.execute(query.format(id))
-    conn.commit()
-    cursor.close()
-    return redirect(url_for("airline.index"))
 
 
 @bp.route("/continue_staff_action", methods=("GET", "POST"))

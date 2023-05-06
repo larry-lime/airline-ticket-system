@@ -36,6 +36,8 @@
                     class="btn btn-primary"
                     id="one-way-btn"
                     onclick="hideElement()">One-way</button>
+            <a href="{{ url_for('airline.search_results', search_all_flights=True) }}"
+               class="btn btn-secondary">Search All Flights</a>
           </div>
         </div>
       </div>
@@ -45,7 +47,7 @@
             <select class="form-select" id="leaving_from" name="leaving_from">
               <option value="" disabled selected hidden>Leaving from...</option>
               {% for airport in airports %}
-                <option value="{{ airport['airport_name'] }}">{{ airport['airport_name'] }}</option>
+                <option value="{{ airport['airport_name'] }}">{{ airport['airport_name'] }}, {{ airport['airport_city'] }}</option>
               {% endfor %}
             </select>
           </div>
@@ -55,7 +57,7 @@
             <select class="form-select" id="going_to" name="going_to">
               <option value="" disabled selected hidden>Going to...</option>
               {% for airport in airports %}
-                <option value="{{ airport['airport_name'] }}">{{ airport['airport_name'] }}</option>
+                <option value="{{ airport['airport_name'] }}">{{ airport['airport_name'] }}, {{ airport['airport_city'] }}</option>
               {% endfor %}
             </select>
           </div>
@@ -130,13 +132,21 @@
                 <div class="col-sm-8">
                   <small class="text">{{ purchase['departure_time'] }} - {{ purchase['arrival_time'] }} ({{ purchase['status'] }})</small>
                 </div>
+                <div class="col-sm-4 text-end">
+                  <small class="text-muted">Leaving: {{ purchase['departure_date'] }}</small>
+                </div>
                 <div class="col-sm-8">
                   <small class="text-muted">{{ purchase['departure_city'] }} ({{ purchase['departure_airport'] }})- {{ purchase['arrival_city'] }} ({{ purchase['arrival_airport'] }})</small>
                 </div>
                 <div class="col-sm-4 text-end">
-                  <small class="text-muted">{{ purchases['airline_name'] }}</small>
+                  <small class="text-muted">{{ purchase['airline_name'] }}</small>
                 </div>
               </div>
+            </div>
+            <div class="card-body">
+              <a href="{{ url_for('airline.index', delete_ticket_id=purchase['ticket_id']) }}">
+                <button class="btn btn-primary">Refund Ticket</button>
+              </a>
             </div>
           </div>
         {% endfor %}
@@ -163,46 +173,45 @@
     {% endif %}
 
     <!--Purchase History-->
-    <!--FIXME: Graph overflowing out of container. Center?-->
     {% if g.user_type == 'customer' %}
-    <div class="container-lg-5 pt-3">
-      <h1>Purchase History</h1>
-    </div>
+      <div class="container-lg-5 pt-3">
+        <h1>Purchase History</h1>
+      </div>
 
-    <!--Purchase History Filter-->
-    <div class="container-lg-5 pt-3 border rounded p-3">
-      <form method="post">
-        <div class="row d-flex justify-content-right align-items-center">
-          <div class="col-sm-3">
-            <div class="input-group">
-              <label class="input-group-text" for="departure_date">Start Date</label>
-              <input type="date"
-                     class="form-control"
-                     id="departure_date"
-                     name="departure_date">
+      <!--Purchase History Filter-->
+      <div class="container-lg-5 pt-3 border rounded p-3">
+        <form method="post">
+          <div class="row d-flex justify-content-right align-items-center">
+            <div class="col-sm-3">
+              <div class="input-group">
+                <label class="input-group-text" for="departure_date">Start Date</label>
+                <input type="date"
+                       class="form-control"
+                       id="departure_date"
+                       name="departure_date">
+              </div>
+            </div>
+            <div id="element-to-toggle" class="col-sm-3">
+              <div class="input-group">
+                <label class="input-group-text" for="return_date">End Date</label>
+                <input type="date" class="form-control" id="return_date" name="return_date">
+              </div>
+            </div>
+            <div class="col-sm">
+              <button type="submit" class="btn btn-primary">Show Results</button>
             </div>
           </div>
-          <div id="element-to-toggle" class="col-sm-3">
-            <div class="input-group">
-              <label class="input-group-text" for="return_date">End Date</label>
-              <input type="date" class="form-control" id="return_date" name="return_date">
+        </form>
+      </div>
+      <div class="container-lg-5 pt-3">
+        <div class="card mb-3">
+          <div class="card-header">
+            <div class="row">
+              <div id='chart' class='chart'”></div>
             </div>
-          </div>
-          <div class="col-sm">
-            <button type="submit" class="btn btn-primary">Show Results</button>
-          </div>
-        </div>
-      </form>
-    </div>
-    <div class="container-lg-5 pt-3">
-      <div class="card mb-3">
-        <div class="card-header">
-          <div class="row">
-            <div id='chart' class='chart'”></div>
           </div>
         </div>
       </div>
-    </div>
     {% endif %}
 
     <!-- View all booking agent -->
@@ -210,21 +219,25 @@
       <div class="container-lg-5 pt-3">
         <h1>Top 5 booking agent</h1>
         <br>
-          <h2> Top 5 Booking Agent in One Month</h2>
-          <br>
-          <ol type="1">
-            {% for month_top_booking_agent in month_top_booking_agents %}
-            <h3><li>{{month_top_booking_agent['username']}}</li></h3>
-            {% endfor %}
-          </ol>
-          <br>
-          <h2> Top 5 Booking Agent in One Year</h2>
-          <br>
-          <ol type="1">
-            {% for year_top_booking_agent in year_top_booking_agents %}
-            <h3><li>{{year_top_booking_agent['username']}}</li></h3>
-            {% endfor %}
-          </ol>
+        <h2>Top 5 Booking Agent in One Month</h2>
+        <br>
+        <ol type="1">
+          {% for month_top_booking_agent in month_top_booking_agents %}
+            <h3>
+              <li>{{ month_top_booking_agent['username'] }}</li>
+            </h3>
+          {% endfor %}
+        </ol>
+        <br>
+        <h2>Top 5 Booking Agent in One Year</h2>
+        <br>
+        <ol type="1">
+          {% for year_top_booking_agent in year_top_booking_agents %}
+            <h3>
+              <li>{{ year_top_booking_agent['username'] }}</li>
+            </h3>
+          {% endfor %}
+        </ol>
       </div>
       <br>
 
@@ -234,22 +247,24 @@
         <br>
         <ol type="1">
           {% for frequent_customer in frequent_customers %}
-          <h3><li>{{frequent_customer['customer_email']}}</li></h3>
-          <div class="card mb-3">
-            <div class="card-header">
-              <div class="row">
-                <div class="col-sm-8">
-                  <small class="text">{{ frequent_customer['departure_time'] }} - {{ frequent_customer['arrival_time'] }} ({{ frequent_customer['STATUS'] }})</small>
-                </div>
-                <div class="col-sm-8">
-                  <small class="text-muted">{{ frequent_customer['departure_city'] }} ({{ frequent_customer['departure_airport'] }})- {{ frequent_customer['arrival_city'] }} ({{ frequent_customer['arrival_airport'] }})</small>
-                </div>
-                <div class="col-sm-4 text-end">
-                  <small class="text-muted">{{ frequent_customer['airline_name'] }}</small>
+            <h3>
+              <li>{{ frequent_customer['customer_email'] }}</li>
+            </h3>
+            <div class="card mb-3">
+              <div class="card-header">
+                <div class="row">
+                  <div class="col-sm-8">
+                    <small class="text">{{ frequent_customer['departure_time'] }} - {{ frequent_customer['arrival_time'] }} ({{ frequent_customer['STATUS'] }})</small>
+                  </div>
+                  <div class="col-sm-8">
+                    <small class="text-muted">{{ frequent_customer['departure_city'] }} ({{ frequent_customer['departure_airport'] }})- {{ frequent_customer['arrival_city'] }} ({{ frequent_customer['arrival_airport'] }})</small>
+                  </div>
+                  <div class="col-sm-4 text-end">
+                    <small class="text-muted">{{ frequent_customer['airline_name'] }}</small>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
           {% endfor %}
         </ol>
       </div>
@@ -258,21 +273,25 @@
       <div class="container-lg-5 pt-3">
         <h1>Top 3 Destinations</h1>
         <br>
-          <h2> Top 3 Destinations in One Year</h2>
-          <br>
-          <ol type="1">
-            {% for year_top_destination in year_top_destinations %}
-            <h3><li>{{year_top_destination['airport_city']}}</li></h3>
-            {% endfor %}
-          </ol>
-          <br>
-          <h2> Top 3 Destinations in Three Month</h2>
-          <br>
-          <ol type="1">
-            {% for month_top_destination in month_top_destinations %}
-            <h3><li>{{month_top_destination['airport_city']}}</li></h3>
-            {% endfor %}
-          </ol>
+        <h2>Top 3 Destinations in One Year</h2>
+        <br>
+        <ol type="1">
+          {% for year_top_destination in year_top_destinations %}
+            <h3>
+              <li>{{ year_top_destination['airport_city'] }}</li>
+            </h3>
+          {% endfor %}
+        </ol>
+        <br>
+        <h2>Top 3 Destinations in Three Month</h2>
+        <br>
+        <ol type="1">
+          {% for month_top_destination in month_top_destinations %}
+            <h3>
+              <li>{{ month_top_destination['airport_city'] }}</li>
+            </h3>
+          {% endfor %}
+        </ol>
       </div>
     {% endif %}
 

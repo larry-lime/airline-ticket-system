@@ -1,4 +1,4 @@
-def error_check_homepage(leaving_from_airport, going_to_airport, departure_date):
+def error_check_search(leaving_from_airport, going_to_airport, departure_date):
     error = None
     if leaving_from_airport is None:
         error = "Leaving from airport is required."

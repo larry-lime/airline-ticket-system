@@ -108,8 +108,6 @@
           {% endif %}
         </div>
         <div class="card-body">
-          <!--TODO: Maybe display an average of all the prices for that flight instead of one ticket price-->
-          <!--or don't display the price at all and make these searh results for tickets OR flights. Make id clear -->
           {% if g.user  %}
             {% if g.user_type != 'airline_staff' %}
               <a href="{{ url_for('airline.purchase_ticket', id=flight['flight_num']) }}">

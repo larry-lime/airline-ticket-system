@@ -6,6 +6,16 @@ import json
 import plotly
 import plotly.express as px
 
+def refund(ticket_id):
+    """
+    Refunds a ticket
+    """
+    conn = get_db()
+    cursor = conn.cursor()
+    query = "DELETE FROM purchases WHERE ticket_id = '{}'"
+    cursor.execute(query.format(ticket_id))
+    conn.commit()
+    cursor.close()
 
 def get_tickets(flight_num):
     """
@@ -118,8 +128,10 @@ def customer_get_purchases(username, user_type):
                 purchase_date,
                 departure_airport,
                 DATE_FORMAT(departure_time, '%h:%i %p') AS departure_time,
+                DATE_FORMAT(departure_time, '%Y-%m-%d') AS departure_date,
                 arrival_airport,
                 DATE_FORMAT(arrival_time, '%h:%i %p') AS arrival_time,
+                DATE_FORMAT(arrival_time, '%Y-%m-%d') AS arrival_date,
                 price,
                 status,
                 airplane_id,
@@ -154,8 +166,10 @@ def booking_agent_get_purchases(agent_id):
             purchase_date,
             departure_airport,
             DATE_FORMAT(departure_time, '%h:%i %p') AS departure_time,
+            DATE_FORMAT(departure_time, '%Y-%m-%d') AS departure_date,
             arrival_airport,
             DATE_FORMAT(arrival_time, '%h:%i %p') AS arrival_time,
+            DATE_FORMAT(arrival_time, '%Y-%m-%d') AS arrival_date,
             price,
             status,
             airplane_id,
