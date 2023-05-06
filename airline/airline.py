@@ -19,6 +19,9 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from airline.auth import login_required, user_is_logged_in
 from airline.db import get_db
 from airline.util import *
+from airline.search_util import *
+from airline.staff_util import *
+from airline.error_checking import *
 
 bp = Blueprint("airline", __name__)
 
@@ -30,178 +33,47 @@ def post(post_id):
 
 
 @bp.route("/", methods=("GET", "POST"))
-# collect data，view my flights
 def index():
-    conn = get_db()
-    cursor = conn.cursor(dictionary=True)
-    query = """
-            SELECT airport_name, airport_city
-            FROM airport
-            """
-    cursor.execute(query)
-    airports = cursor.fetchall()
-    cursor.close()
-    # TODO: Remove this when the post() function above is finished and when there is actual post content in the database
-    posts = [
-        {
-            "id": 1,
-            "title": "Welcome to Airline",
-            "summary": "This is a website for airline reservation",
-            "image_url": "https://www.wikihow.com/images/thumb/6/65/Italicize-Text-in-HTML-Step-1.jpg/aid2477375-v4-677px-Italicize-Text-in-HTML-Step-1.jpg",
-        },
-        {
-            "id": 2,
-            "title": "New Routes Added!",
-            "summary": "We have added new routes to our list of destinations.",
-            "image_url": "https://www.wikihow.com/images/thumb/6/65/Italicize-Text-in-HTML-Step-1.jpg/aid2477375-v4-677px-Italicize-Text-in-HTML-Step-1.jpg",
-        },
-        {
-            "id": 2,
-            "title": "Travel Tips",
-            "summary": "Here are some helpful tips for making your air travel experience more comfortable and enjoyable.",
-            "image_url": "https://www.wikihow.com/images/thumb/6/65/Italicize-Text-in-HTML-Step-1.jpg/aid2477375-v4-677px-Italicize-Text-in-HTML-Step-1.jpg",
-        },
-    ]
-
-    purchases = None
-    graphJSON = None
-    flights = None
-
+    airports = get_airports()
     username = g.user["username"] if user_is_logged_in() else None
+    purchases = graphJSON = flights = None
+    month_top_booking_agents = year_top_booking_agents = frequent_customers = None
+    year_top_destinations = month_top_destinations = None
+    posts = []
+
     if g.user_type == "airline_staff":
         airline_name = g.user["airline_name"]
-        conn = get_db()
-        cursor = conn.cursor(dictionary=True)
-        query = """
-                SELECT *
-                FROM flight
-                WHERE airline_name = '{}' and 
-                departure_time <= ( NOW( ) + INTERVAL 1 MONTH )
-                """
-        cursor.execute(query.format(airline_name))
-        flights = cursor.fetchall()
-        cursor.close()
+        flights = get_next_month_flights(airline_name)
+        month_top_booking_agents = get_top_agents_of_month(airline_name)
+        year_top_booking_agents = get_top_agents_of_year(airline_name)
+        frequent_customers = top_customers(airline_name)
+        year_top_destinations = top_destinations_of_year(airline_name)
+        month_top_destinations = top_destinations_of_last_3_months(airline_name)
 
-        # view top 5 agent
-        conn = get_db()
-        cursor = conn.cursor(dictionary=True)
-        query = '''
-                SELECT DISTINCT b1.username
-                FROM booking_agent as b1 
-                JOIN purchases as p1 on b1.booking_agent_id = p1.booking_agent_id
-                JOIN booking_agent_work_for as bw on b1.username = bw.email
-                WHERE bw.airline_name = '{}' and 
-                p1.purchase_date >= (NOW() - INTERVAL 1 MONTH)
-                GROUP BY b1.booking_agent_id
-                ORDER BY COUNT(*) DESC
-                LIMIT 5
-                '''
-        cursor.execute(query.format(airline_name))
-        month_top_booking_agents = cursor.fetchall()
-        cursor.close()
-
-        conn = get_db()
-        cursor = conn.cursor(dictionary=True)
-        error = None
-
-        query = '''
-                SELECT DISTINCT b1.username
-                FROM booking_agent as b1 
-                JOIN purchases as p1 on b1.booking_agent_id = p1.booking_agent_id
-                JOIN booking_agent_work_for as bw on b1.username = bw.email
-                WHERE bw.airline_name = '{}' and 
-                p1.purchase_date >= (NOW() - INTERVAL 1 YEAR)
-                GROUP BY b1.booking_agent_id
-                ORDER BY COUNT(*) DESC
-                LIMIT 5
-                '''
-        cursor.execute(query.format(airline_name))
-        year_top_booking_agents = cursor.fetchall()
-        cursor.close()
-
-        #view top customers
-        conn = get_db()
-        cursor = conn.cursor(dictionary=True)
-        error = None
-
-        query = '''
-                SELECT *
-                FROM purchases as p NATURAL JOIN ticket as t NATURAL JOIN flight
-                WHERE t.airline_name = '{}' and 
-                p.purchase_date >= (NOW() - INTERVAL 1 YEAR)
-                GROUP BY p.customer_email
-                ORDER BY COUNT(*) DESC
-                LIMIT 5
-                '''
-        cursor.execute(query.format(airline_name))
-        frequent_customers = cursor.fetchall()
-        cursor.close()
-
-        # view top destinaions
-        conn = get_db()
-        cursor = conn.cursor(dictionary=True)
-        error = None
-
-        query = '''
-                SELECT DISTINCT a.airport_city
-                FROM flight as f 
-                JOIN (ticket NATURAL JOIN purchases) on ticket.flight_num = f.flight_num
-                JOIN airport as a on f.arrival_airport = a.airport_name
-                WHERE ticket.airline_name = '{}' and 
-                purchases.purchase_date >= (NOW() - INTERVAL 1 YEAR)
-                GROUP BY f.arrival_airport
-                ORDER BY COUNT(*) DESC
-                LIMIT 3
-                '''
-        cursor.execute(query.format(airline_name))
-        year_top_destinations = cursor.fetchall()
-        cursor.close()
-
-        conn = get_db()
-        cursor = conn.cursor(dictionary=True)
-        error = None
-
-        query = '''
-                SELECT DISTINCT a.airport_city
-                FROM flight as f 
-                JOIN (ticket NATURAL JOIN purchases) on ticket.flight_num = f.flight_num
-                JOIN airport as a on f.arrival_airport = a.airport_name
-                WHERE ticket.airline_name = '{}' and 
-                purchases.purchase_date >= (NOW() - INTERVAL 3 MONTH)
-                GROUP BY f.arrival_airport
-                ORDER BY COUNT(*) DESC
-                LIMIT 3
-                '''
-        cursor.execute(query.format(airline_name))
-        month_top_destinations = cursor.fetchall()
-        cursor.close()
-
-
-    if g.user_type == "customer":
+    elif g.user_type == "customer":
         purchases = (
             customer_get_purchases(username, g.user_type)
             if user_is_logged_in()
             else None
         )
         graphJSON = plot_customer_purchase_totals(username)
-    if g.user_type == "booking_agent":
+
+    elif g.user_type == "booking_agent":
         purchases = (
-            booking_agent_get_purchases(username, g.user["booking_agent_id"])
+            booking_agent_get_purchases(g.user["booking_agent_id"])
             if user_is_logged_in()
             else None
         )
 
     if request.method == "POST":
-        conn = get_db()
-        cursor = conn.cursor(dictionary=True)
-        error = None
+        leaving_from_airport = request.form.get("leaving_from")
+        going_to_airport = request.form.get("going_to")
+        departure_date = request.form.get("departure_date")
+        return_date = request.form.get("return_date")
 
-        going_to_airport = session["going_to"] = request.form.get("going_to")
-        leaving_from_airport = session["leaving_from"] = request.form.get(
-            "leaving_from"
+        error = error_check_homepage(
+            leaving_from_airport, going_to_airport, departure_date
         )
-        departure_date = session["departure_date"] = request.form.get("departure_date")
-        return_date = session["return_date"] = request.form.get("return_date")
 
         if error is None:
             return redirect(
@@ -216,146 +88,82 @@ def index():
 
         flash(error)
 
-    # TODO: Refactor the if conditionals
-    if purchases is not None:
-        return render_template(
-            "airline/index.html",
-            airports=airports,
-            purchases=purchases,
-            graphJSON=graphJSON,
-            posts=posts,
-        )
-    elif g.user_type == "airline_staff":
-        return render_template(
-            "airline/index.html",
-            airports=airports,
-            flights=flights,
-            graphJSON=graphJSON,
-            posts=posts,
-            month_top_booking_agents=month_top_booking_agents,
-            year_top_booking_agents=year_top_booking_agents,
-            frequent_customers=frequent_customers,
-            year_top_destinations=year_top_destinations,
-            month_top_destinations=month_top_destinations
-        )
-    else:
-        return render_template(
-            "airline/index.html",
-            airports=airports,
-            graphJSON=graphJSON,
-            posts=posts,
-        )
+    return render_template(
+        "airline/index.html",
+        airports=airports,
+        flights=flights,
+        graphJSON=graphJSON,
+        posts=posts,
+        purchases=purchases,
+        month_top_booking_agents=month_top_booking_agents,
+        year_top_booking_agents=year_top_booking_agents,
+        frequent_customers=frequent_customers,
+        year_top_destinations=year_top_destinations,
+        month_top_destinations=month_top_destinations,
+    )
 
 
 @bp.route("/search", methods=("GET", "POST"))
-# search func.
 def search_results():
+    # NOTE: Some args can be none
     going_to_airport = request.args.get("going_to_airport")
     leaving_from_airport = request.args.get("leaving_from_airport")
     departure_date = request.args.get("departure_date")
     return_date = request.args.get("return_date")
 
-    conn = get_db()
-    cursor = conn.cursor(dictionary=True)
-    query = """
-            SELECT airport_name, airport_city
-            FROM airport
-            """
-    cursor.execute(query)
-    airports = cursor.fetchall()
-    cursor.close()
+    airports = get_airports()
+    all_flight_search = False
 
-    if g.user_type == "airline_staff":
-        airline_name = g.user["airline_name"]
-        conn = get_db()
-        cursor = conn.cursor(dictionary=True)
-        error = None
-        # TODO: Add a simple WHERE clause to the query below when we have enough sample data
-        query = """
-                SELECT airline_name,
-                    flight_num,
-                    departure_airport,
-                    DATE_FORMAT(departure_time, '%h:%i %p') AS departure_time,
-                    arrival_airport,
-                    DATE_FORMAT(arrival_time, '%h:%i %p') AS arrival_time,
-                    price,
-                    status,
-                    airplane_id,
-                    a1.airport_city as departure_city,
-                    a2.airport_city as arrival_city, 
-                    (SELECT purchases.customer_email FROM ticket NATURAL JOIN purchases
-                    WHERE ticket.flight_num = f.flight_num) as customer_email
-                FROM flight as f
-                JOIN airport as a1 on f.departure_airport = a1.airport_name
-                JOIN airport as a2 on f.arrival_airport = a2.airport_name
-                WHERE airline_name = '{}' 
-                and (f.departure_airport = '{}' and f.arrival_airport = '{}')
-                or (f.departure_airport = '{}' and f.arrival_airport = '{}' and f.departure_time ='{}')
-                or (f.departure_airport = '{}' and f.arrival_airport = '{}' and f.departure_time ='{}')
-                """
-        cursor.execute(
-            query.format(
+    flights = []
+    error = None
+
+    if (
+        going_to_airport is None
+        and leaving_from_airport is None
+        and departure_date is None
+        and return_date is None
+    ):
+        all_flight_search = True
+    elif not going_to_airport:
+        error = "Going to airport is required."
+    elif not leaving_from_airport:
+        error = "Leaving from airport is required."
+
+    if error is None:
+        # Check user types
+        if all_flight_search:
+            flights = search_all_flights()
+        elif g.user_type == "airline_staff":
+            airline_name = g.user["airline_name"]
+            flights = search_as_airline_staff(
                 airline_name,
-                leaving_from_airport,
                 going_to_airport,
                 leaving_from_airport,
-                going_to_airport,
                 departure_date,
-                going_to_airport,
-                leaving_from_airport,
                 return_date,
             )
-        )
-        flights = cursor.fetchall()
-        cursor.close()
-
-    else:
-        conn = get_db()
-        cursor = conn.cursor(dictionary=True)
-        error = None
-        # TODO: Add a simple WHERE clause to the query below when we have enough sample data
-        query = """
-                SELECT airline_name,
-                    flight_num,
-                    departure_airport,
-                    DATE_FORMAT(departure_time, '%h:%i %p') AS departure_time,
-                    arrival_airport,
-                    DATE_FORMAT(arrival_time, '%h:%i %p') AS arrival_time,
-                    price,
-                    status,
-                    airplane_id,
-                    a1.airport_city as departure_city,
-                    a2.airport_city as arrival_city 
-                FROM flight as f
-                JOIN airport as a1 on f.departure_airport = a1.airport_name
-                JOIN airport as a2 on f.arrival_airport = a2.airport_name
-                WHERE (f.departure_airport = '{}' and f.arrival_airport = '{}')
-                or (f.departure_airport = '{}' and f.arrival_airport = '{}' and f.departure_time ='{}')
-                or (f.departure_airport = '{}' and f.arrival_airport = '{}' and f.departure_time ='{}')
-                """
-        cursor.execute(query.format(leaving_from_airport,
-                going_to_airport,
+        else:  # NOTE: Customers and Booking Agents search like anon users
+            flights = general_search(
                 leaving_from_airport,
                 going_to_airport,
                 departure_date,
-                going_to_airport,
-                leaving_from_airport,
-                return_date))
-        
-        flights = cursor.fetchall()
-        cursor.close()
+                return_date,
+            )
+    else:
+        flash(error)
 
     if request.method == "POST":
-        conn = get_db()
-        cursor = conn.cursor(dictionary=True)
         error = None
 
+        # TODO: Change this to not use session variables
         going_to_airport = session["going_to"] = request.form.get("going_to")
         leaving_from_airport = session["leaving_from"] = request.form.get(
             "leaving_from"
         )
         departure_date = session["departure_date"] = request.form.get("departure_date")
         return_date = session["return_date"] = request.form.get("return_date")
+
+        # TODO: Add error checking here
 
         if error is None:
             return redirect(
@@ -743,7 +551,7 @@ def add_booking_agent():
         first_name = request.form["first_name"]
         last_name = request.form["last_name"]
         booking_agent_id = request.form["booking_agent_id"]
-        airline_name = request.form['airline_name']
+        airline_name = request.form["airline_name"]
 
         conn = get_db()
         cursor = conn.cursor(dictionary=True)
@@ -769,7 +577,7 @@ def add_booking_agent():
                     booking_agent_id,
                 )
             )
-            
+
             conn.commit()
             cursor.close()
 
@@ -785,7 +593,6 @@ def add_booking_agent():
             cursor.execute(query.format(username, airline_name))
             conn.commit()
             cursor.close()
-
 
             return redirect(url_for("airline.index"))
 

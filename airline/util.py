@@ -1,6 +1,5 @@
 from airline.db import get_db
 from werkzeug.exceptions import abort
-from flask import flash
 
 import pandas as pd
 import json
@@ -9,6 +8,9 @@ import plotly.express as px
 
 
 def get_tickets(flight_num):
+    """
+    Returns a list of all tickets for a given flight
+    """
     conn = get_db()
     cursor = conn.cursor(dictionary=True)
     query = """
@@ -23,6 +25,22 @@ def get_tickets(flight_num):
     cursor.close()
 
     return tickets
+
+
+def get_airports():
+    """
+    Returns a list of all airports in the database
+    """
+    conn = get_db()
+    cursor = conn.cursor(dictionary=True)
+    query = """
+            SELECT airport_name, airport_city
+            FROM airport
+            """
+    cursor.execute(query)
+    airport_list = cursor.fetchall()
+    cursor.close()
+    return airport_list
 
 
 def load_purchases(username):
@@ -90,7 +108,7 @@ def plot_customer_purchase_totals(username):
 def customer_get_purchases(username, user_type):
     conn = get_db()
     cursor = conn.cursor(dictionary=True)
-    #if user_type == 'curstomer':
+    # if user_type == 'curstomer':
     query = """
             SELECT airline_name,
                 flight_num,
@@ -123,7 +141,8 @@ def customer_get_purchases(username, user_type):
 
     return purchases
 
-def booking_agent_get_purchases(username, agent_id):
+
+def booking_agent_get_purchases(agent_id):
     conn = get_db()
     cursor = conn.cursor(dictionary=True)
     query = """
@@ -151,13 +170,11 @@ def booking_agent_get_purchases(username, agent_id):
         WHERE booking_agent_id = '{}'
     """
     # Get all the available tickets for a given flight
-    # TODO: Add conditional to allow booking_agents to get purchases too
     cursor.execute(query.format(agent_id))
     purchases = cursor.fetchall()
     cursor.close()
 
     return purchases
-    
 
 
 def get_user_info(username, user_type):
