@@ -40,7 +40,7 @@ def index():
         year_top_booking_agents
     ) = frequent_customers = year_top_destinations = month_top_destinations = []
     top_5_customers_6_months = top_5_customers_1_year = []
-    revenue_dis = total_tickets_sold_1_month = total_tickets_sold_1_year = 0
+    revenue_dist = total_tickets_sold_1_month = total_tickets_sold_1_year = 0
 
     if delete_ticket_id is not None:
         refund(delete_ticket_id)
