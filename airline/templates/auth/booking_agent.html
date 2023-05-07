@@ -24,6 +24,16 @@
                    class="form-control"
                    required>
           </div>
+          <div class="mb-3">
+            <label for="booking_agent_id" class="form-label">Airline You Work For</label>
+            <select class="form-select" id="airline_name" name="airline_name">
+              <option value="" disabled selected hidden>Choose Airline</option>
+              {% for airline in airlines %}
+                <option value="{{ airline['airline_name'] }}">{{ airline['airline_name'] }} Airlines</option>
+              {% endfor %}
+            </select>
+
+          </div>
           <button type="submit" class="btn btn-primary">Register</button>
         </form>
       </div>

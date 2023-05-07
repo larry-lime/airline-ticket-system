@@ -5,6 +5,8 @@ import pandas as pd
 import json
 import plotly
 import plotly.express as px
+from flask import flash
+
 
 def refund(ticket_id):
     """
@@ -16,6 +18,7 @@ def refund(ticket_id):
     cursor.execute(query.format(ticket_id))
     conn.commit()
     cursor.close()
+
 
 def get_tickets(flight_num):
     """
@@ -53,38 +56,79 @@ def get_airports():
     return airport_list
 
 
-def load_purchases(username):
+def get_airlines():
+    """
+    Returns a list of all airlines in the database
+    """
+    conn = get_db()
+    cursor = conn.cursor(dictionary=True)
+    query = """
+            SELECT airline_name
+            FROM airline
+            """
+    cursor.execute(query)
+    airlines = cursor.fetchall()
+    cursor.close()
+    return airlines
+
+
+def load_purchases(username, start_date="", end_date=""):
     conn = get_db()
     cursor = conn.cursor(dictionary=True)
     # Get the sum of purchases for the last 6 months
 
-    # TODO: Allow user to get purchases for a custom date range
-    query = """
-            SELECT MONTH(purchase_date) as month,
-                   SUM(price)           as total
-            FROM (SELECT purchase_date,
-                         price,
-                         customer_email
-                  FROM purchases
-                           NATURAL JOIN ticket
-                           NATURAL JOIN flight
-                  WHERE customer_email = '{}'
-                    AND purchase_date > DATE_SUB(NOW(), INTERVAL 6 MONTH)) as t
-            GROUP BY month;
-            """
-    # Get all the available tickets for a given flight
-    cursor.execute(query.format(username))
+    # TODO: Test this to make sure it works
+    if start_date != "" and end_date != "":
+        query = """
+                SELECT MONTH(purchase_date) as month,
+                       SUM(price)           as total
+                FROM (SELECT purchase_date,
+                             price,
+                             customer_email
+                      FROM purchases
+                               NATURAL JOIN ticket
+                               NATURAL JOIN flight
+                      WHERE customer_email = '{}'
+                        AND purchase_date > '{}' AND purchase_date < '{}') as t
+                GROUP BY month;
+                """
+        # Get all the available tickets for a given flight and date range
+        cursor.execute(query.format(username, start_date, end_date))
+    else:
+        query = """
+                SELECT MONTH(purchase_date) as month,
+                       SUM(price)           as total
+                FROM (SELECT purchase_date,
+                             price,
+                             customer_email
+                      FROM purchases
+                               NATURAL JOIN ticket
+                               NATURAL JOIN flight
+                      WHERE customer_email = '{}'
+                        AND purchase_date > DATE_SUB(NOW(), INTERVAL 6 MONTH)) as t
+                GROUP BY month;
+                """
+        # Get all the available tickets for a given flight
+        cursor.execute(query.format(username))
     purchases = cursor.fetchall()
     cursor.close()
     return purchases
 
 
-def plot_customer_purchase_totals(username):
+def plot_customer_purchase_totals(username, start_date="", end_date=""):
+    # TODO: Not perfect, so fix this!
+    num_months = 6
+    if start_date != "" and end_date != "":
+        num_months = max(
+            # convert start and end date to epoch time
+            (pd.Timestamp(end_date) - pd.Timestamp(start_date)).days // 30, 1
+        )
     amount_per_month = [0 for _ in range(12)]
-    for purchase in load_purchases(username):
+    purchases = load_purchases(username, start_date, end_date)
+    for purchase in purchases:
         amount_per_month[purchase["month"] - 1] = purchase["total"]
 
-    # Show the total amount of purchases for the last 6 months
+    # Default behavior: show the total amount of purchases for the last 6 months
     # get current month
     this_month = pd.Timestamp.now().month
 
@@ -106,9 +150,9 @@ def plot_customer_purchase_totals(username):
     df = pd.DataFrame(
         {
             "$USD Amount": [
-                amount_per_month[i] for i in range(this_month - 6, this_month)
+                amount_per_month[i] for i in range(this_month - num_months, this_month)
             ],
-            "Months": [months[i] for i in range(this_month - 6, this_month)],
+            "Months": [months[i] for i in range(this_month - num_months, this_month)],
         }
     )
     fig = px.bar(df, x="Months", y="$USD Amount", barmode="group")
@@ -118,7 +162,7 @@ def plot_customer_purchase_totals(username):
 def customer_get_purchases(username, user_type):
     conn = get_db()
     cursor = conn.cursor(dictionary=True)
-    # if user_type == 'curstomer':
+    # if user_type == 'customer':
     query = """
             SELECT airline_name,
                 flight_num,

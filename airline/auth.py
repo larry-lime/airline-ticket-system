@@ -13,6 +13,7 @@ from flask import (
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from airline.db import get_db
+from airline.util import *
 
 bp = Blueprint("auth", __name__, url_prefix="/auth")
 
@@ -192,8 +193,9 @@ def register_staff():
 
 @bp.route("/register/agent", methods=("GET", "POST"))
 def register_agent():
-    # TODO: Add a field for booking agent to fill out which airline they work for
+    airlines = get_airlines()
     if request.method == "POST":
+        airline_name = request.form["airline_name"]
         username = session["username"]
         password = session["password"]
         first_name = session["first_name"]
@@ -204,12 +206,31 @@ def register_agent():
         cursor = conn.cursor(dictionary=True)
         error = None
 
+        # Username is already taken
         query = "SELECT * FROM booking_agent WHERE username = '{}'"
         cursor.execute(query.format(username))
-        data = cursor.fetchone()
-        if data is not None:
+        data1 = cursor.fetchone()
+
+        # User in the same airline has the same booking_agent_id
+        query = """
+                SELECT *
+                FROM booking_agent as ba
+                JOIN booking_agent_work_for as bawf
+                ON ba.username = bawf.email
+                WHERE booking_agent_id = {}
+                AND airline_name = '{}'
+                """
+        cursor.execute(query.format(booking_agent_id, airline_name))
+        data2 = cursor.fetchone()
+
+        # TODO: Pull this out and refactor it eventually
+        if data1 is not None:
             error = f"User {username} is already registered."
-        else:
+        elif data2 is not None:
+            error = f"Booking agent ID {booking_agent_id} for {airline_name} airlines is already taken."
+
+        if error is None:
+            # Insert into booking agent
             query = """
                     INSERT INTO booking_agent (username, password, first_name, last_name, booking_agent_id)
                     VALUES('{}','{}','{}','{}', {})
@@ -224,12 +245,22 @@ def register_agent():
                 )
             )
             conn.commit()
+            # Insert into booking_agent_work_for
+            query = """
+                    INSERT INTO booking_agent_work_for (email, airline_name)
+                    VALUES('{}','{}')
+                    """
+            cursor.execute(query.format(username, airline_name))
+            conn.commit()
             cursor.close()
             return redirect(url_for("auth.login"))
 
         flash(error)
 
-    return render_template("auth/booking_agent.html")
+    return render_template(
+        "auth/booking_agent.html",
+        airlines=airlines,
+    )
 
 
 @bp.route("/login", methods=("GET", "POST"))
@@ -265,4 +296,5 @@ def login():
 @bp.route("/logout")
 def logout():
     session.clear()
+    flash('Goodbye!')
     return redirect(url_for("index"))
