@@ -16,6 +16,7 @@ from airline.db import get_db
 from airline.util import *
 from airline.search_util import *
 from airline.staff_util import *
+from airline.agent_util import *
 from airline.error_checking import *
 
 bp = Blueprint("airline", __name__)
@@ -59,6 +60,7 @@ def index():
         graphJSON = plot_customer_purchase_totals(username)
 
     elif g.user_type == "booking_agent":
+        commission = get_commission(g.user["booking_agent_id"])
         purchases = (
             booking_agent_get_purchases(g.user["booking_agent_id"])
             if user_is_logged_in()
@@ -111,6 +113,7 @@ def index():
 
         flash(error)
 
+    flash(commission)
     return render_template(
         "airline/index.html",
         airports=airports,
@@ -123,6 +126,7 @@ def index():
         frequent_customers=frequent_customers,
         year_top_destinations=year_top_destinations,
         month_top_destinations=month_top_destinations,
+        commission=commission,
     )
 
 
