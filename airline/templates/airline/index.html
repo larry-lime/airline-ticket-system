@@ -256,7 +256,7 @@
           <div class="card-body">
             <h4>Total Commisions: ${{ commission['commission'] }} USD</h4>
             <h4>Total Number of Tickets Sold: {{ total_tickets_sold['total_tickets_sold'] }} Tickets</h4>
-            <h4>Average Commission Recieved: ~${{ commission['commission']//total_tickets_sold['total_tickets_sold'] }} USD</h4>
+            <h4>Average Commission Recieved: ~${{ commission['commission']//total_tickets_sold['total_tickets_sold'] if commission['commission'] else 0 }} USD</h4>
           </div>
         </div>
       </div>
@@ -283,7 +283,7 @@
         </div>
         <div class="card mb-3">
           <div class="card-header">
-            <h4>Past Year</h4>
+            <h4>Past 1 Year</h4>
           </div>
           <ol>
             <div class="card-body">
@@ -301,33 +301,38 @@
     <!-- View all booking agent -->
     {% if g.user_type == 'airline_staff' %}
       <div class="container-lg-5 pt-3">
+        <h1>Top Booking Agents</h1>
+      </div>
+      <div class="container-lg-5 pt-3">
         <div class="card mb-3">
           <div class="card-header">
-        <h1>Top 5 booking agent</h1>
+            <h4>Past 1 Month</h4>
+          </div>
+          <ol>
+            <div class="card-body">
+              {% for month_top_booking_agent in month_top_booking_agents %}
+                <h4>
+                  <li>{{ month_top_booking_agent['username'] }}</li>
+                </h4>
+              {% endfor %}
+            </div>
+          </ol>
+        </div>
+        <div class="card mb-3">
+          <div class="card-header">
+            <h4>Past 1 Year</h4>
+          </div>
+          <ol>
+            <div class="card-body">
+              {% for year_top_booking_agent in year_top_booking_agents %}
+                <h3>
+                  <li>{{ year_top_booking_agent['username'] }}</li>
+                </h3>
+              {% endfor %}
+            </div>
+          </ol>
+        </div>
       </div>
-        <br>
-        <h2>Top 5 Booking Agent in One Month</h2>
-        <br>
-        <ol type="1">
-          {% for month_top_booking_agent in month_top_booking_agents %}
-            <h3>
-              <li>{{ month_top_booking_agent['username'] }}</li>
-            </h3>
-          {% endfor %}
-        </ol>
-        <br>
-        <h2>Top 5 Booking Agent in One Year</h2>
-        <br>
-        <ol type="1">
-          {% for year_top_booking_agent in year_top_booking_agents %}
-            <h3>
-              <li>{{ year_top_booking_agent['username'] }}</li>
-            </h3>
-          {% endfor %}
-        </ol>
-      </div>
-      </div>
-      <br>
 
       <!-- view top customers -->
       <div class="container-lg-5 pt-3">
