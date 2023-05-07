@@ -123,7 +123,6 @@ def top_destinations_of_last_3_months(airline_name):
 def top_customers(airline_name):
     conn = get_db()
     cursor = conn.cursor(dictionary=True)
-    error = None
 
     query = """
             SELECT *
@@ -138,3 +137,68 @@ def top_customers(airline_name):
     frequent_customers = cursor.fetchall()
     cursor.close()
     return frequent_customers
+
+def get_total_tickets_sold_1_months(airline_name):
+    """
+    Returns the total number of tickets sold by the airline
+    """
+    conn = get_db()
+    cursor = conn.cursor(dictionary=True)
+
+    query = """
+            SELECT
+              COUNT(*) as total_tickets
+            FROM
+              purchases
+              NATURAL JOIN ticket
+              NATURAL JOIN flight
+            WHERE airline_name = '{}'
+            AND purchase_date >= (NOW() - INTERVAL 1 MONTH)
+            """
+    cursor.execute(query.format(airline_name))
+    total_tickets = cursor.fetchone()
+    cursor.close()
+    return total_tickets if total_tickets else 0
+
+def get_total_tickets_sold_1_year(airline_name):
+    """
+    Returns the total number of tickets sold by the airline
+    """
+    conn = get_db()
+    cursor = conn.cursor(dictionary=True)
+
+    query = """
+            SELECT
+              COUNT(*) as total_tickets
+            FROM
+              purchases
+              NATURAL JOIN ticket
+              NATURAL JOIN flight
+            WHERE airline_name = '{}'
+            AND purchase_date >= (NOW() - INTERVAL 1 YEAR)
+            """
+    cursor.execute(query.format(airline_name))
+    total_tickets = cursor.fetchone()
+    cursor.close()
+    return total_tickets or 0
+
+def get_revenue_dist(airline_name):
+    """
+    Returns what percentage of the revenue is from direct sales and what percentage is from booking agents
+    """
+    conn = get_db()
+    cursor = conn.cursor(dictionary=True)
+
+    # divide total volume by total volume of direct sales
+    query = """
+            SELECT (SELECT COUNT(*)
+                FROM purchases as p1
+                WHERE p1.booking_agent_id is not null)
+                   /
+               (SELECT COUNT(*)
+                FROM purchases as p2) as ratio;
+            """
+    cursor.execute(query.format(airline_name))
+    revenue_ratio = cursor.fetchone()
+    cursor.close()
+    return int(revenue_ratio['ratio'] * 100)

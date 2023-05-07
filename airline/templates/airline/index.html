@@ -334,6 +334,53 @@
         </div>
       </div>
 
+      <div class="container-lg-5 pt-3">
+        <h1>Sales Report</h1>
+      </div>
+      <div class="container-lg-5 pt-3 border rounded p-3">
+        <form id='form3'
+              action="{{ url_for('airline.index', bp='update_summary') }}"
+              method="post">
+          <div class="row d-flex justify-content-right align-items-center">
+            <div class="col-sm-3">
+              <div class="input-group">
+                <label class="input-group-text" for="start_date">Start Date</label>
+                <input type="date" class="form-control" id="start_date" name="start_date">
+              </div>
+            </div>
+            <div id="element-to-toggle" class="col-sm-3">
+              <div class="input-group">
+                <label class="input-group-text" for="end_date">End Date</label>
+                <input type="date" class="form-control" id="end_date" name="end_date">
+              </div>
+            </div>
+            <div class="col-sm">
+              <button type="submit" class="btn btn-primary update_summary">Show Results</button>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="container-lg-5 pt-3">
+        <div class="card mb-3">
+          <div class="card-header">
+            <h4>Sales Numbers</h4>
+          </div>
+            <div class="card-body">
+            <h4>Total Tickets Sold (1 month): {{ total_tickets_sold_1_month['total_tickets'] }}</h4>
+            <h4>Total Tickets Sold (1 year): {{ total_tickets_sold_1_year['total_tickets'] }}</h4>
+            </div>
+        </div>
+        <div class="card mb-3">
+          <div class="card-header">
+            <h4>Revenue Flow Comparison</h4>
+          </div>
+            <div class="card-body">
+            <h4>Booking Agent Sales Percentage: {{ revenue_dist }}%</h4>
+            <h4>Customer Sales Percentage: {{ 100 - revenue_dist }}%</h4>
+            </div>
+        </div>
+      </div>
+
       <!-- view top customers -->
       <div class="container-lg-5 pt-3">
         <h1>Top 5 Customer</h1>

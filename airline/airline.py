@@ -40,6 +40,7 @@ def index():
         year_top_booking_agents
     ) = frequent_customers = year_top_destinations = month_top_destinations = []
     top_5_customers_6_months = top_5_customers_1_year = []
+    revenue_dis = total_tickets_sold_1_month = total_tickets_sold_1_year = 0
 
     if delete_ticket_id is not None:
         refund(delete_ticket_id)
@@ -52,6 +53,9 @@ def index():
         frequent_customers = top_customers(airline_name)
         year_top_destinations = top_destinations_of_year(airline_name)
         month_top_destinations = top_destinations_of_last_3_months(airline_name)
+        total_tickets_sold_1_month = get_total_tickets_sold_1_months(airline_name)
+        total_tickets_sold_1_year = get_total_tickets_sold_1_year(airline_name)
+        revenue_dist = get_revenue_dist(airline_name)
 
     elif g.user_type == "customer" and g.user:
         purchases = (
@@ -150,7 +154,9 @@ def index():
         commission=commission,
         total_tickets_sold=total_tickets_sold,
         top_5_customers_6_months=top_5_customers_6_months,
-        top_5_customers_1_year=top_5_customers_1_year,
+        total_tickets_sold_1_month=total_tickets_sold_1_month,
+        total_tickets_sold_1_year=total_tickets_sold_1_year,
+        revenue_dist=revenue_dist,
     )
 
 
