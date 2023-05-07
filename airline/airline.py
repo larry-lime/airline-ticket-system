@@ -39,6 +39,7 @@ def index():
     month_top_booking_agents = (
         year_top_booking_agents
     ) = frequent_customers = year_top_destinations = month_top_destinations = []
+    top_5_customers_6_months = top_5_customers_1_year = []
 
     if delete_ticket_id is not None:
         refund(delete_ticket_id)
@@ -63,6 +64,9 @@ def index():
     elif g.user_type == "booking_agent":
         commission = get_commission(g.user["booking_agent_id"])
         total_tickets_sold = get_total_tickets_sold(g.user["booking_agent_id"])
+        top_5_customers_6_months = get_top_5_customers_6_months(g.user["booking_agent_id"])
+        top_5_customers_1_year = get_top_5_customers_1_year(g.user["booking_agent_id"])
+
         purchases = (
             booking_agent_get_purchases(g.user["booking_agent_id"])
             if user_is_logged_in()
@@ -110,6 +114,8 @@ def index():
                     purchases=purchases,
                     commission=commission,
                     total_tickets_sold=total_tickets_sold,
+                    start_date=start_date,
+                    end_date=end_date,
                 )
         elif button_pressed == "search_flights":
             error = error_check_search(
@@ -143,6 +149,8 @@ def index():
         month_top_destinations=month_top_destinations,
         commission=commission,
         total_tickets_sold=total_tickets_sold,
+        top_5_customers_6_months=top_5_customers_6_months,
+        top_5_customers_1_year=top_5_customers_1_year,
     )
 
 

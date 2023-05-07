@@ -21,7 +21,9 @@
 
   <!--Search bar + buttons-->
   <div class="container-lg-5 pt-3 border rounded p-3">
-    <form id='form1' action="{{ url_for('airline.index', bp='search_flights') }}" method="post">
+    <form id='form1'
+          action="{{ url_for('airline.index', bp='search_flights') }}"
+          method="post">
       <div class="row mb-3">
         <div class="col-md-6 justify-content-left">
           <div class="btn-group-md" role="group">
@@ -180,15 +182,14 @@
 
       <!--Purchase History Filter-->
       <div class="container-lg-5 pt-3 border rounded p-3">
-        <form id='form3' action="{{ url_for('airline.index', bp='update_graph') }}" method="post">
+        <form id='form3'
+              action="{{ url_for('airline.index', bp='update_graph') }}"
+              method="post">
           <div class="row d-flex justify-content-right align-items-center">
             <div class="col-sm-3">
               <div class="input-group">
                 <label class="input-group-text" for="start_date">Start Date</label>
-                <input type="date"
-                       class="form-control"
-                       id="start_date"
-                       name="start_date">
+                <input type="date" class="form-control" id="start_date" name="start_date">
               </div>
             </div>
             <div id="element-to-toggle" class="col-sm-3">
@@ -198,7 +199,7 @@
               </div>
             </div>
             <div class="col-sm">
-                <button type="submit" class="btn btn-primary update_purchase_history">Show Results</button>
+              <button type="submit" class="btn btn-primary update_purchase_history">Show Results</button>
             </div>
           </div>
         </form>
@@ -221,15 +222,14 @@
 
       <!--Performance-->
       <div class="container-lg-5 pt-3 border rounded p-3">
-        <form id='form3' action="{{ url_for('airline.index', bp='update_summary') }}" method="post">
+        <form id='form3'
+              action="{{ url_for('airline.index', bp='update_summary') }}"
+              method="post">
           <div class="row d-flex justify-content-right align-items-center">
             <div class="col-sm-3">
               <div class="input-group">
                 <label class="input-group-text" for="start_date">Start Date</label>
-                <input type="date"
-                       class="form-control"
-                       id="start_date"
-                       name="start_date">
+                <input type="date" class="form-control" id="start_date" name="start_date">
               </div>
             </div>
             <div id="element-to-toggle" class="col-sm-3">
@@ -239,7 +239,7 @@
               </div>
             </div>
             <div class="col-sm">
-                <button type="submit" class="btn btn-primary update_summary">Show Results</button>
+              <button type="submit" class="btn btn-primary update_summary">Show Results</button>
             </div>
           </div>
         </form>
@@ -247,13 +247,53 @@
       <div class="container-lg-5 pt-3">
         <div class="card mb-3">
           <div class="card-header">
-            <h4>Past Month's Performance</h4>
+            {% if start_date and end_date %}
+              <h4>Performance ({{ start_date }} to {{ end_date }})</h4>
+            {% else %}
+              <h4>Performance (Past Month)</h4>
+            {% endif %}
           </div>
-            <div class="card-body">
+          <div class="card-body">
             <h4>Total Commisions: ${{ commission['commission'] }} USD</h4>
             <h4>Total Number of Tickets Sold: {{ total_tickets_sold['total_tickets_sold'] }} Tickets</h4>
-            <h4>Average Commission Recieved: ${{ commission['commission']/total_tickets_sold['total_tickets_sold'] }} USD</h4>
+            <h4>Average Commission Recieved: ~${{ commission['commission']//total_tickets_sold['total_tickets_sold'] }} USD</h4>
+          </div>
+        </div>
+      </div>
+
+      <!--TODO: Add a bar chart to this!-->
+      <!--Best Customers-->
+      <div class="container-lg-5 pt-3">
+        <h1>Top Customers</h1>
+      </div>
+      <div class="container-lg-5 pt-3">
+        <div class="card mb-3">
+          <div class="card-header">
+            <h4>Past 6 Months</h4>
+          </div>
+          <ol>
+            <div class="card-body">
+              {% for customer in top_5_customers_6_months %}
+                <h4>
+                  <li>{{ customer['customer_email'] }}: {{ customer['total_tickets_bought'] }} Tickets Purchased</li>
+                </h4>
+              {% endfor %}
             </div>
+          </ol>
+        </div>
+        <div class="card mb-3">
+          <div class="card-header">
+            <h4>Past Year</h4>
+          </div>
+          <ol>
+            <div class="card-body">
+              {% for customer in top_5_customers_1_year %}
+                <h4>
+                  <li>{{ customer['customer_email'] }}: {{ customer['total_tickets_bought'] }} Tickets Purchased</li>
+                </h4>
+              {% endfor %}
+            </div>
+          </ol>
         </div>
       </div>
     {% endif %}
