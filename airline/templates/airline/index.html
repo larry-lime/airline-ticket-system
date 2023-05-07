@@ -38,6 +38,9 @@
                     onclick="hideElement()">One-way</button>
             <a href="{{ url_for('airline.search_results', search_all_flights=True) }}"
                class="btn btn-secondary">Search All Flights</a>
+            <!--Make this work!-->
+            <a href="{{ url_for('airline.search_results', search_all_tickets=True) }}"
+               class="btn btn-secondary">Search All Tickets</a>
           </div>
         </div>
       </div>
@@ -89,33 +92,32 @@
   {% if g.user %}
     <!--Airline Staff Actions-->
     {% if g.user_type == 'airline_staff' %}
-      <br>
       <div class="container-lg-5 pt-3">
-        <div class="container md">
-          <h1>Staff Actions</h1>
-          <form action="/continue_staff_action" method="post">
-            <div class="row">
-              <div class="col-sm-3">
-                <div class="input-group">
-                  <select class="form-select" id="staff_action" name="staff_action">
-                    <option value="" disabled selected hidden>Seclect an action</option>
-                    <option value="create_new_flight">Creat new flight</option>
-                    <option value="change_status">Change status of flights</option>
-                    <option value="add_airplane">Add airplane in the system</option>
-                    <option value="add_new_airport">Add new airport in the system</option>
-                    <option value="grant_new_permission">Grant new permissions</option>
-                    <option value="add_booking_agent">Add new booking agent in the system</option>
-                  </select>
-                </div>
+        <h1>Staff Actions</h1>
+      </div>
+      <div class="container-lg-5 pt-3 border rounded p-3">
+        <form action="/continue_staff_action" method="post">
+          <div class="row">
+            <div class="col-sm-3">
+              <div class="input-group">
+                <select class="form-select" id="staff_action" name="staff_action">
+                  <option value="" disabled selected hidden>Select an action...</option>
+                  <option value="create_new_flight">Create new flight</option>
+                  <option value="change_status">Change status of flights</option>
+                  <option value="add_airplane">Add airplane in the system</option>
+                  <option value="add_new_airport">Add new airport in the system</option>
+                  <option value="grant_new_permission">Grant new permissions</option>
+                  <option value="add_booking_agent">Add new booking agent in the system</option>
+                </select>
               </div>
             </div>
-            <br>
-            <div class="continue_staff_action">
-              <button type="submit" class="btn btn-primary continue_staff_action">Continue Action</button>
+            <div class="col-sm-3 gx-2">
+              <div class="continue_staff_action">
+                <button type="submit" class="btn btn-primary continue_staff_action">Continue</button>
+              </div>
             </div>
-          </form>
-          <br>
-        </div>
+          </div>
+        </form>
       </div>
     {% endif %}
 

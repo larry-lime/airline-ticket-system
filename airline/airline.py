@@ -37,10 +37,11 @@ def index():
     airports = get_airports()
     delete_ticket_id = request.args.get("delete_ticket_id")
     username = g.user["username"] if user_is_logged_in() else None
-    purchases = graphJSON = flights = None
-    month_top_booking_agents = year_top_booking_agents = frequent_customers = None
-    year_top_destinations = month_top_destinations = None
-    posts = []
+    purchases = posts = []
+    graphJSON = flights = None
+    month_top_booking_agents = (
+        year_top_booking_agents
+    ) = frequent_customers = year_top_destinations = month_top_destinations = []
 
     if delete_ticket_id is not None:
         refund(delete_ticket_id)
@@ -110,6 +111,7 @@ def index():
 @bp.route("/search", methods=("GET", "POST"))
 def search_results():
     get_all_flights = request.args.get("search_all_flights")
+    get_all_tickets = request.args.get("search_all_tickets")
     going_to_airport = request.args.get("going_to_airport")
     leaving_from_airport = request.args.get("leaving_from_airport")
     departure_date = request.args.get("departure_date")
@@ -120,6 +122,9 @@ def search_results():
 
     if get_all_flights is not None and get_all_flights == "True":
         flights = search_all_flights()
+
+    elif get_all_tickets is not None and get_all_tickets == "True":
+        flights = search_all_tickets()
 
     elif g.user_type == "airline_staff":
         airline_name = g.user["airline_name"]
