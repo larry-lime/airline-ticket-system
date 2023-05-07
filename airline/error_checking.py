@@ -15,3 +15,11 @@ def error_check_update_graph(start_date, end_date):
     elif end_date == "":
         error = "End date is required."
     return error
+
+def error_check_update_summary(start_date, end_date):
+    error = None
+    if start_date == "":
+        error = "Start date is required."
+    elif end_date == "":
+        error = "End date is required."
+    return error

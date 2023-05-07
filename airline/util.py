@@ -89,7 +89,9 @@ def load_purchases(username, start_date="", end_date=""):
                                NATURAL JOIN ticket
                                NATURAL JOIN flight
                       WHERE customer_email = '{}'
-                        AND purchase_date > '{}' AND purchase_date < '{}') as t
+                        AND purchase_date >= '{}'
+                        AND purchase_date <= '{}'
+                      ) as t
                 GROUP BY month;
                 """
         # Get all the available tickets for a given flight and date range
@@ -105,7 +107,7 @@ def load_purchases(username, start_date="", end_date=""):
                                NATURAL JOIN ticket
                                NATURAL JOIN flight
                       WHERE customer_email = '{}'
-                        AND purchase_date > DATE_SUB(NOW(), INTERVAL 6 MONTH)) as t
+                        AND purchase_date >= DATE_SUB(NOW(), INTERVAL 6 MONTH)) as t
                 GROUP BY month;
                 """
         # Get all the available tickets for a given flight

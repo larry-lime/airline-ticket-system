@@ -35,6 +35,7 @@ def index():
     username = g.user["username"] if user_is_logged_in() else None
     purchases = posts = []
     graphJSON = flights = None
+    commission = total_tickets_sold = None
     month_top_booking_agents = (
         year_top_booking_agents
     ) = frequent_customers = year_top_destinations = month_top_destinations = []
@@ -61,6 +62,7 @@ def index():
 
     elif g.user_type == "booking_agent":
         commission = get_commission(g.user["booking_agent_id"])
+        total_tickets_sold = get_total_tickets_sold(g.user["booking_agent_id"])
         purchases = (
             booking_agent_get_purchases(g.user["booking_agent_id"])
             if user_is_logged_in()
@@ -95,6 +97,20 @@ def index():
                     year_top_destinations=year_top_destinations,
                     month_top_destinations=month_top_destinations,
                 )
+        elif button_pressed == "update_summary":
+            error = error_check_update_summary(start_date, end_date)
+            commission = get_commission(g.user["booking_agent_id"], start_date, end_date)
+            total_tickets_sold = get_total_tickets_sold(g.user["booking_agent_id"], start_date, end_date)
+            if error is None:
+                return render_template(
+                    "airline/index.html",
+                    airports=airports,
+                    flights=flights,
+                    posts=posts,
+                    purchases=purchases,
+                    commission=commission,
+                    total_tickets_sold=total_tickets_sold,
+                )
         elif button_pressed == "search_flights":
             error = error_check_search(
                 leaving_from_airport, going_to_airport, departure_date
@@ -113,7 +129,6 @@ def index():
 
         flash(error)
 
-    flash(commission)
     return render_template(
         "airline/index.html",
         airports=airports,
@@ -127,6 +142,7 @@ def index():
         year_top_destinations=year_top_destinations,
         month_top_destinations=month_top_destinations,
         commission=commission,
+        total_tickets_sold=total_tickets_sold,
     )
 
 
