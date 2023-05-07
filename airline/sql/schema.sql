@@ -1,3 +1,6 @@
+-- Set global sql_mode to allow for group by without aggregation
+SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));
+
 -- Blog Tables
 DROP TABLE IF EXISTS post;
 
