@@ -1,8 +1,3 @@
-import pandas as pd
-import json
-import plotly
-import plotly.express as px
-
 import datetime
 from flask import (
     Blueprint,
@@ -218,6 +213,7 @@ def purchase_ticket(id):
     flight = get_flight(id)
     tickets = get_tickets(id)
 
+    # TODO: Add a trigger to UPDATE a booking agent's commission when a ticket is purchased
     if request.method == "POST":
         user_info = get_user_info(g.user["username"], g.user_type)
         ticket_id = request.form["ticket"]
@@ -448,7 +444,6 @@ def add_new_airport():
 
 
 @bp.route("/change_status", methods=("GET", "POST"))
-# search func.
 def change_status():
     conn = get_db()
     cursor = conn.cursor(dictionary=True)
@@ -472,7 +467,7 @@ def change_status():
         cursor.execute(query.format(flight_num, STATUS))
         data = cursor.fetchone()
         if data is not None:
-            error = f"STATUS is the same"
+            error = "STATUS is the same"
         else:
             query = """
                 UPDATE flight
@@ -493,7 +488,6 @@ def change_status():
 
 
 @bp.route("/grant_new_permission", methods=("GET", "POST"))
-# search func.
 def grant_new_permission():
     conn = get_db()
     cursor = conn.cursor(dictionary=True)
@@ -519,7 +513,7 @@ def grant_new_permission():
         cursor.execute(query.format(username, permission_type))
         data = cursor.fetchone()
         if data is not None:
-            error = f"Permission is the same"
+            error = "Permission is the same"
         else:
             query = """
                 UPDATE permission
@@ -540,7 +534,6 @@ def grant_new_permission():
 
 
 @bp.route("/add_booking_agent", methods=("GET", "POST"))
-# search func.
 def add_booking_agent():
     if request.method == "POST":
         username = request.form["username"]
@@ -558,7 +551,7 @@ def add_booking_agent():
         cursor.execute(query.format(username))
         data = cursor.fetchone()
         if data is not None:
-            error = f"Booking agent has existed in the system"
+            error = "Booking agent has existed in the system"
         else:
             query = """
                 INSERT INTO booking_agent
