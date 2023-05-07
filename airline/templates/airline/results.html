@@ -108,8 +108,18 @@
           {% endif %}
         </div>
         <div class="card-body">
-          {% if g.user  and g.user_type != 'airline_staff' %}
+          {% if g.user  and g.user_type == 'customer' %}
             {% if flight['purchased_ticket_id'] == None %}
+              <a href="{{ url_for('airline.purchase_ticket', id=flight['flight_num']) }}">
+                <button class="btn btn-primary">Purchase</button>
+              </a>
+            {% elif flight['customer_email'] == g.user['username'] %}
+              <a href="{{ url_for('airline.index', delete_ticket_id=flight['purchased_ticket_id']) }}">
+                <button class="btn btn-primary">Refund</button>
+              </a>
+            {% endif %}
+          {% elif g.user and g.user_type == 'booking_agent' %}
+            {% if flight['purchased_ticket_id'] == None and flight['airline_name'] == g.user['airline_name'] %}
               <a href="{{ url_for('airline.purchase_ticket', id=flight['flight_num']) }}">
                 <button class="btn btn-primary">Purchase</button>
               </a>

@@ -45,10 +45,18 @@ def load_logged_in_user():
     else:
         conn = get_db()
         cursor = conn.cursor(dictionary=True)
-        query = "SELECT * FROM {} where username = '{}'"
-        cursor.execute(query.format(user_type, username))
+        if user_type == "booking_agent":
+            query = """SELECT *
+                       FROM booking_agent
+                       JOIN booking_agent_work_for
+                       ON booking_agent.username = booking_agent_work_for.email
+                       WHERE username = '{}'
+                    """
+            cursor.execute(query.format(username))
+        else:
+            query = "SELECT * FROM {} where username = '{}'"
+            cursor.execute(query.format(user_type, username))
         g.user = cursor.fetchone()
-        conn.commit()
         cursor.close()
 
 
@@ -293,5 +301,5 @@ def login():
 @bp.route("/logout")
 def logout():
     session.clear()
-    flash('Goodbye!')
+    flash("Goodbye!")
     return redirect(url_for("index"))
