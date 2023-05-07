@@ -41,6 +41,22 @@ def init_db():
 
     cursor.close()
 
+def create_triggers():
+    conn = get_db()
+
+    # Create tables
+    cursor = conn.cursor()
+    with current_app.open_resource("sql/triggers.sql") as f:
+        queries = f.read().decode("utf8")
+        for query in queries.split(";"):
+            if query.strip():
+                cursor.execute(query)
+        conn.commit()
+        data = cursor.fetchall()
+        print(data) if data else print("Triggers added")
+
+    cursor.close()
+
 
 def insert_sample_data():
     conn = get_db()
@@ -93,6 +109,7 @@ def init_db_command():
     """Clear the existing data and create new tables."""
     init_db()
     insert_sample_data()
+    create_triggers()
     click.echo("Initialized the database.")
 
 

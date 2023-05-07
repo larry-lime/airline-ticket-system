@@ -214,6 +214,21 @@
       </div>
     {% endif %}
 
+    {% if g.user_type == 'booking_agent' %}
+      <div class="container-lg-5 pt-3">
+        <h1>My Commissions</h1>
+      </div>
+
+      <!--Purchase History Filter-->
+      <div class="container-lg-5 pt-3">
+        <div class="card mb-3">
+          <div class="card-header">
+            <h4>Past Month: ${{ commission['commission'] }} USD</h4>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
     <!-- View all booking agent -->
     {% if g.user_type == 'airline_staff' %}
       <div class="container-lg-5 pt-3">

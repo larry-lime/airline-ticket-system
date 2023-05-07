@@ -215,10 +215,7 @@ def register_agent():
         query = """
                 SELECT *
                 FROM booking_agent as ba
-                JOIN booking_agent_work_for as bawf
-                ON ba.username = bawf.email
                 WHERE booking_agent_id = {}
-                AND airline_name = '{}'
                 """
         cursor.execute(query.format(booking_agent_id, airline_name))
         data2 = cursor.fetchone()
