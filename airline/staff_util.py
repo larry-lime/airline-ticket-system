@@ -11,6 +11,7 @@ def get_next_month_flights(airline_name):
     """
     Returns all flights of the next month
     """
+    # TODO: Add missing columns like departure_city, arrival_city, and formatted time
     conn = get_db()
     cursor = conn.cursor(dictionary=True)
     query = """

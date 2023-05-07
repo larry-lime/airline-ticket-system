@@ -162,7 +162,7 @@
                   <small class="text">{{ flight['departure_time'] }} - {{ flight['arrival_time'] }} ({{ flight['STATUS'] }})</small>
                 </div>
                 <div class="col-sm-8">
-                  <small class="text-muted">{{ flight['departure_city'] }} ({{ flight['departure_airport'] }})- {{ flight['arrival_city'] }} ({{ flight['arrival_airport'] }})</small>
+                  <small class="text-muted">{{ flight['departure_city'] }} ({{ flight['departure_airport'] }}) - {{ flight['arrival_city'] }} ({{ flight['arrival_airport'] }})</small>
                 </div>
                 <div class="col-sm-4 text-end">
                   <small class="text-muted">{{ flight['airline_name'] }}</small>
@@ -301,7 +301,10 @@
     <!-- View all booking agent -->
     {% if g.user_type == 'airline_staff' %}
       <div class="container-lg-5 pt-3">
+        <div class="card mb-3">
+          <div class="card-header">
         <h1>Top 5 booking agent</h1>
+      </div>
         <br>
         <h2>Top 5 Booking Agent in One Month</h2>
         <br>
@@ -322,6 +325,7 @@
             </h3>
           {% endfor %}
         </ol>
+      </div>
       </div>
       <br>
 

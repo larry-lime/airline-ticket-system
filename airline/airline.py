@@ -44,7 +44,7 @@ def index():
     if delete_ticket_id is not None:
         refund(delete_ticket_id)
 
-    if g.user_type == "airline_staff":
+    if g.user_type == "airline_staff" and g.user:
         airline_name = g.user["airline_name"]
         flights = get_next_month_flights(airline_name)
         month_top_booking_agents = get_top_agents_of_month(airline_name)
@@ -53,7 +53,7 @@ def index():
         year_top_destinations = top_destinations_of_year(airline_name)
         month_top_destinations = top_destinations_of_last_3_months(airline_name)
 
-    elif g.user_type == "customer":
+    elif g.user_type == "customer" and g.user:
         purchases = (
             customer_get_purchases(username, g.user_type)
             if user_is_logged_in()
@@ -61,7 +61,7 @@ def index():
         )
         graphJSON = plot_customer_purchase_totals(username)
 
-    elif g.user_type == "booking_agent":
+    elif g.user_type == "booking_agent" and g.user:
         commission = get_commission(g.user["booking_agent_id"])
         total_tickets_sold = get_total_tickets_sold(g.user["booking_agent_id"])
         top_5_customers_6_months = get_top_5_customers_6_months(g.user["booking_agent_id"])
