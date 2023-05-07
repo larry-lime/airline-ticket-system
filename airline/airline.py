@@ -37,10 +37,11 @@ def index():
     airports = get_airports()
     delete_ticket_id = request.args.get("delete_ticket_id")
     username = g.user["username"] if user_is_logged_in() else None
-    purchases = graphJSON = flights = None
-    month_top_booking_agents = year_top_booking_agents = frequent_customers = None
-    year_top_destinations = month_top_destinations = None
-    posts = []
+    purchases = posts = []
+    graphJSON = flights = None
+    month_top_booking_agents = (
+        year_top_booking_agents
+    ) = frequent_customers = year_top_destinations = month_top_destinations = []
 
     if delete_ticket_id is not None:
         refund(delete_ticket_id)
@@ -74,21 +75,44 @@ def index():
         going_to_airport = request.form.get("going_to")
         departure_date = request.form.get("departure_date")
         return_date = request.form.get("return_date")
+        start_date = request.form["start_date"]
+        end_date = request.form["end_date"]
+        button_pressed = request.args.get("bp")
 
-        error = error_check_search(
-            leaving_from_airport, going_to_airport, departure_date
-        )
-
-        if error is None:
-            return redirect(
-                url_for(
-                    "airline.search_results",
-                    going_to_airport=going_to_airport,
-                    leaving_from_airport=leaving_from_airport,
-                    departure_date=departure_date,
-                    return_date=return_date,
+        if button_pressed == "update_graph":
+            # TODO: Fix this so it works
+            error = error_check_update_graph(start_date, end_date)
+            graphJSON = plot_customer_purchase_totals(username, start_date, end_date)
+            if error is None:
+                # NOTE: The exception here will never happen
+                return render_template(
+                    "airline/index.html",
+                    airports=airports,
+                    flights=flights,
+                    graphJSON=graphJSON,
+                    posts=posts,
+                    purchases=purchases,
+                    month_top_booking_agents=month_top_booking_agents,
+                    year_top_booking_agents=year_top_booking_agents,
+                    frequent_customers=frequent_customers,
+                    year_top_destinations=year_top_destinations,
+                    month_top_destinations=month_top_destinations,
                 )
+        elif button_pressed == "search_flights":
+            error = error_check_search(
+                leaving_from_airport, going_to_airport, departure_date
             )
+
+            if error is None:
+                return redirect(
+                    url_for(
+                        "airline.search_results",
+                        going_to_airport=going_to_airport,
+                        leaving_from_airport=leaving_from_airport,
+                        departure_date=departure_date,
+                        return_date=return_date,
+                    )
+                )
 
         flash(error)
 
@@ -110,6 +134,7 @@ def index():
 @bp.route("/search", methods=("GET", "POST"))
 def search_results():
     get_all_flights = request.args.get("search_all_flights")
+    get_all_tickets = request.args.get("search_all_tickets")
     going_to_airport = request.args.get("going_to_airport")
     leaving_from_airport = request.args.get("leaving_from_airport")
     departure_date = request.args.get("departure_date")
@@ -120,6 +145,9 @@ def search_results():
 
     if get_all_flights is not None and get_all_flights == "True":
         flights = search_all_flights()
+
+    elif get_all_tickets is not None and get_all_tickets == "True":
+        flights = search_all_tickets()
 
     elif g.user_type == "airline_staff":
         airline_name = g.user["airline_name"]

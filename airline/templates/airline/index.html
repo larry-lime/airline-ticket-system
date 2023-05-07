@@ -14,9 +14,6 @@
           {% endblock %}
         </h1>
       </div>
-      <div class="col-sm-4 text-end">
-        <a class="btn btn-primary" href="/">My Flights</a>
-      </div>
     </div>
   </div>
 {% endblock %}
@@ -24,7 +21,7 @@
 
   <!--Search bar + buttons-->
   <div class="container-lg-5 pt-3 border rounded p-3">
-    <form method="post">
+    <form id='form1' action="{{ url_for('airline.index', bp='search_flights') }}" method="post">
       <div class="row mb-3">
         <div class="col-md-6 justify-content-left">
           <div class="btn-group-md" role="group">
@@ -79,7 +76,8 @@
         </div>
       </div>
       <div class="row justify-content-center mt-3">
-        <button type="submit" class="btn btn-primary col-6 col-md-3">Search</button>
+        <!-- <button type="submit" class="btn btn-primary col-6 col-md-3">Search</button> -->
+        <button type="submit" class="btn btn-primary col-6 col-md-3 search_flights">Search</button>
       </div>
     </form>
   </div>
@@ -89,40 +87,39 @@
   {% if g.user %}
     <!--Airline Staff Actions-->
     {% if g.user_type == 'airline_staff' %}
-      <br>
       <div class="container-lg-5 pt-3">
-        <div class="container md">
-          <h1>Staff Actions</h1>
-          <form action="/continue_staff_action" method="post">
-            <div class="row">
-              <div class="col-sm-3">
-                <div class="input-group">
-                  <select class="form-select" id="staff_action" name="staff_action">
-                    <option value="" disabled selected hidden>Seclect an action</option>
-                    <option value="create_new_flight">Creat new flight</option>
-                    <option value="change_status">Change status of flights</option>
-                    <option value="add_airplane">Add airplane in the system</option>
-                    <option value="add_new_airport">Add new airport in the system</option>
-                    <option value="grant_new_permission">Grant new permissions</option>
-                    <option value="add_booking_agent">Add new booking agent in the system</option>
-                  </select>
-                </div>
+        <h1>Staff Actions</h1>
+      </div>
+      <div class="container-lg-5 pt-3 border rounded p-3">
+        <form action="/continue_staff_action" method="post">
+          <div class="row">
+            <div class="col-sm-3">
+              <div class="input-group">
+                <select class="form-select" id="staff_action" name="staff_action">
+                  <option value="" disabled selected hidden>Select an action...</option>
+                  <option value="create_new_flight">Create new flight</option>
+                  <option value="change_status">Change status of flights</option>
+                  <option value="add_airplane">Add airplane in the system</option>
+                  <option value="add_new_airport">Add new airport in the system</option>
+                  <option value="grant_new_permission">Grant new permissions</option>
+                  <option value="add_booking_agent">Add new booking agent in the system</option>
+                </select>
               </div>
             </div>
-            <br>
-            <div class="continue_staff_action">
-              <button type="submit" class="btn btn-primary continue_staff_action">Continue Action</button>
+            <div class="col-sm-3 gx-2">
+              <div class="continue_staff_action">
+                <button type="submit" class="btn btn-primary continue_staff_action">Continue</button>
+              </div>
             </div>
-          </form>
-          <br>
-        </div>
+          </div>
+        </form>
       </div>
     {% endif %}
 
     <!--My Flights-->
-    {% if g.user_type == 'customer' or 'booking_agent' %}
+    {% if g.user_type in ['customer', 'booking_agent'] %}
       <div class="container-lg-5 pt-3">
-        <h1>My Flights</h1>
+        <h1>My Purchased Flights</h1>
       </div>
       <div class="container-lg-5 pt-3">
         {% for purchase in purchases %}
@@ -152,6 +149,9 @@
         {% endfor %}
       {% endif %}
       {% if g.user_type == 'airline_staff' %}
+        <div class="container-lg-5 pt-3">
+          <h1>My Created Flights</h1>
+        </div>
         {% for flight in flights %}
           <div class="card mb-3">
             <div class="card-header">
@@ -180,25 +180,25 @@
 
       <!--Purchase History Filter-->
       <div class="container-lg-5 pt-3 border rounded p-3">
-        <form method="post">
+        <form id='form3' action="{{ url_for('airline.index', bp='update_graph') }}" method="post">
           <div class="row d-flex justify-content-right align-items-center">
             <div class="col-sm-3">
               <div class="input-group">
-                <label class="input-group-text" for="departure_date">Start Date</label>
+                <label class="input-group-text" for="start_date">Start Date</label>
                 <input type="date"
                        class="form-control"
-                       id="departure_date"
-                       name="departure_date">
+                       id="start_date"
+                       name="start_date">
               </div>
             </div>
             <div id="element-to-toggle" class="col-sm-3">
               <div class="input-group">
-                <label class="input-group-text" for="return_date">End Date</label>
-                <input type="date" class="form-control" id="return_date" name="return_date">
+                <label class="input-group-text" for="end_date">End Date</label>
+                <input type="date" class="form-control" id="end_date" name="end_date">
               </div>
             </div>
             <div class="col-sm">
-              <button type="submit" class="btn btn-primary">Show Results</button>
+                <button type="submit" class="btn btn-primary update_purchase_history">Show Results</button>
             </div>
           </div>
         </form>
