@@ -77,3 +77,44 @@ def get_total_tickets_sold(booking_agent_id, start_date="", end_date=""):
     total_tickets_sold = cursor.fetchone()
     cursor.close()
     return total_tickets_sold
+
+def get_top_5_customers_6_months(booking_agent_id):
+    """
+    Gets the top 5 customers for the agent based on the number of tickets sold in the past 6 months
+    """
+    conn = get_db()
+    cursor = conn.cursor(dictionary=True)
+    query = """
+            SELECT customer_email, COUNT(*) AS total_tickets_bought
+            FROM purchases
+            WHERE booking_agent_id = {}
+            AND purchase_date >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
+            GROUP BY customer_email
+            ORDER BY total_tickets_bought DESC
+            LIMIT 5
+            """
+    cursor.execute(query.format(booking_agent_id))
+    top_5_customers = cursor.fetchall()
+    cursor.close()
+    return top_5_customers
+
+def get_top_5_customers_1_year(booking_agent_id):
+    """
+    Gets the top 5 customers for the agent based on the number of tickets sold in the past year
+    """
+    conn = get_db()
+    cursor = conn.cursor(dictionary=True)
+    query = """
+            SELECT customer_email, COUNT(*) AS total_tickets_bought
+            FROM purchases
+            WHERE booking_agent_id = {}
+            AND purchase_date >= DATE_SUB(NOW(), INTERVAL 1 YEAR)
+            GROUP BY customer_email
+            ORDER BY total_tickets_bought DESC
+            LIMIT 5
+            """
+    cursor.execute(query.format(booking_agent_id))
+    top_5_customers = cursor.fetchall()
+    cursor.close()
+    return top_5_customers
+
