@@ -154,6 +154,7 @@ def index():
         commission=commission,
         total_tickets_sold=total_tickets_sold,
         top_5_customers_6_months=top_5_customers_6_months,
+        top_5_customers_1_year=top_5_customers_1_year,
         total_tickets_sold_1_month=total_tickets_sold_1_month,
         total_tickets_sold_1_year=total_tickets_sold_1_year,
         revenue_dist=revenue_dist,

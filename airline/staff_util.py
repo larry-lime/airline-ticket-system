@@ -1,10 +1,4 @@
 from airline.db import get_db
-from werkzeug.exceptions import abort
-
-import pandas as pd
-import json
-import plotly
-import plotly.express as px
 
 
 def get_next_month_flights(airline_name):
@@ -138,6 +132,7 @@ def top_customers(airline_name):
     cursor.close()
     return frequent_customers
 
+
 def get_total_tickets_sold_1_months(airline_name):
     """
     Returns the total number of tickets sold by the airline
@@ -158,7 +153,8 @@ def get_total_tickets_sold_1_months(airline_name):
     cursor.execute(query.format(airline_name))
     total_tickets = cursor.fetchone()
     cursor.close()
-    return total_tickets if total_tickets else 0
+    return total_tickets or 0
+
 
 def get_total_tickets_sold_1_year(airline_name):
     """
@@ -182,6 +178,7 @@ def get_total_tickets_sold_1_year(airline_name):
     cursor.close()
     return total_tickets or 0
 
+
 def get_revenue_dist(airline_name):
     """
     Returns what percentage of the revenue is from direct sales and what percentage is from booking agents
@@ -201,4 +198,4 @@ def get_revenue_dist(airline_name):
     cursor.execute(query.format(airline_name))
     revenue_ratio = cursor.fetchone()
     cursor.close()
-    return int(revenue_ratio['ratio'] * 100)
+    return int(revenue_ratio["ratio"] * 100)
