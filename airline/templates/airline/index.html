@@ -375,8 +375,8 @@
             <h4>Revenue Flow Comparison</h4>
           </div>
             <div class="card-body">
-            <h4>Booking Agent Sales Percentage: {{ revenue_dist }}%</h4>
-            <h4>Customer Sales Percentage: {{ 100 - revenue_dist }}%</h4>
+            <h4>Booking Agent Sales Percentage: {{ revenue_dist['ratio'] * 100 if revenue_dist['ratio'] else 0 }}%</h4>
+            <h4>Customer Sales Percentage: {{ 100 - revenue_dist['ratio'] * 100 if revenue_dist['ratio'] else 0 }}%</h4>
             </div>
         </div>
       </div>
