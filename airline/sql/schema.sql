@@ -29,21 +29,6 @@ DROP TABLE IF EXISTS airport;
 
 DROP TABLE IF EXISTS customer;
 
--- Blog Tables
-CREATE TABLE
-  post (
-    id INT AUTO_INCREMENT NOT NULL,
-    title VARCHAR(255) NOT NULL,
-    summary TEXT NOT NULL,
-    body TEXT NOT NULL,
-    created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    image_url VARCHAR(255) NOT NULL,
-    author_username VARCHAR(50),
-    reference_airport VARCHAR(50) NOT NULL,
-    PRIMARY KEY (id),
-    FOREIGN KEY (author_username) REFERENCES airline_staff(username),
-    FOREIGN KEY (reference_airport) REFERENCES airport(airport_name)
-  );
 
 -- Airline Dashboard Tables
 CREATE TABLE
@@ -90,6 +75,22 @@ CREATE TABLE
     airport_name VARCHAR(50) NOT NULL,
     airport_city VARCHAR(50) NOT NULL,
     PRIMARY KEY (airport_name)
+  );
+
+-- Blog Tables
+CREATE TABLE
+  post (
+    id INT AUTO_INCREMENT NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    summary TEXT NOT NULL,
+    body TEXT NOT NULL,
+    created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    image_url VARCHAR(255) NOT NULL,
+    author_username VARCHAR(50),
+    reference_airport VARCHAR(50) NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (author_username) REFERENCES airline_staff(username),
+    FOREIGN KEY (reference_airport) REFERENCES airport(airport_name)
   );
 
 -- Booking Agent Table

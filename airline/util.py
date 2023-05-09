@@ -5,7 +5,6 @@ import pandas as pd
 import json
 import plotly
 import plotly.express as px
-from flask import flash
 
 
 def refund(ticket_id):

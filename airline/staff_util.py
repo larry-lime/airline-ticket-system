@@ -198,4 +198,4 @@ def get_revenue_dist(airline_name):
     cursor.execute(query.format(airline_name))
     revenue_ratio = cursor.fetchone()
     cursor.close()
-    return int(revenue_ratio["ratio"] * 100)
+    return revenue_ratio
