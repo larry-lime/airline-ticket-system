@@ -85,23 +85,6 @@ CREATE TABLE
 
 -- Blog Tables
 CREATE TABLE
-    post
-(
-    id                INT AUTO_INCREMENT NOT NULL,
-    title             VARCHAR(255)       NOT NULL,
-    summary           TEXT               NOT NULL,
-    body              TEXT               NOT NULL,
-    created           TIMESTAMP          NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    image_url         VARCHAR(255)       NOT NULL,
-    author_username   VARCHAR(50),
-    reference_airport VARCHAR(50)        NOT NULL,
-    PRIMARY KEY (id),
-    FOREIGN KEY (author_username) REFERENCES airline_staff (username),
-    FOREIGN KEY (reference_airport) REFERENCES airport (airport_name)
-);
-
--- Blog Tables
-CREATE TABLE
   post (
     id INT AUTO_INCREMENT NOT NULL,
     title VARCHAR(255) NOT NULL,
