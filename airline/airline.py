@@ -276,13 +276,13 @@ def purchase_ticket(id):
     if request.method == "POST":
         user_info = get_user_info(g.user["username"], g.user_type)
         ticket_id = request.form.get("ticket")
-        session["customer_email"] = customer_email = request.form.get("customer_email")
+        # session["customer_email"] = customer_email = request.form.get("customer_email")
         error = None
 
         if ticket_id is None:
             error = "Ticket is required."
-        elif customer_email is None:
-            error = "Customer email is required."
+        # elif customer_email is None:
+        #     error = "Customer email is required."
 
         if error is None:
             purchase_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
