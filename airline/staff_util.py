@@ -1,5 +1,10 @@
 from airline.db import get_db
 
+import pandas as pd
+import json
+import plotly
+import plotly.express as px
+
 
 def get_next_month_flights(airline_name):
     """
@@ -199,3 +204,16 @@ def get_revenue_dist(airline_name):
     revenue_ratio = cursor.fetchone()
     cursor.close()
     return revenue_ratio
+
+
+def plot_revenue_split(airline_name):
+    """
+    Plot the revenue split in a pie chart
+    """
+    ratio_dict = get_revenue_dist(airline_name)
+    ratio = ratio_dict["ratio"]
+    labels = ["Booking Agent Sales", "Direct Sales"]
+    values = [ratio, 1 - ratio]
+
+    fig = px.pie(values=values, names=labels, title="Revenue Split")
+    return json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)

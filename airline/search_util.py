@@ -68,37 +68,60 @@ def general_search(
     conn = get_db()
     cursor = conn.cursor(dictionary=True)
     error = None
-    query = """
-            SELECT airline_name,
-                flight_num,
-                departure_airport,
-                DATE_FORMAT(departure_time, '%h:%i %p') AS departure_time,
-                arrival_airport,
-                DATE_FORMAT(arrival_time, '%h:%i %p') AS arrival_time,
-                price,
-                status,
-                airplane_id,
-                a1.airport_city as departure_city,
-                a2.airport_city as arrival_city 
-            FROM flight as f
-            JOIN airport as a1 on f.departure_airport = a1.airport_name
-            JOIN airport as a2 on f.arrival_airport = a2.airport_name
-            WHERE (f.departure_airport = '{}' and f.arrival_airport = '{}')
-            OR (f.departure_airport = '{}' and f.arrival_airport = '{}' and f.departure_time ='{}')
-            OR (f.departure_airport = '{}' and f.arrival_airport = '{}' and f.departure_time ='{}')
-            """
-    cursor.execute(
-        query.format(
-            leaving_from_airport,
-            going_to_airport,
-            leaving_from_airport,
-            going_to_airport,
-            departure_date,
-            going_to_airport,
-            leaving_from_airport,
-            return_date,
+    # TODO: Add return date functionality in the future
+    if leaving_from_airport and going_to_airport and departure_date:
+        query = """
+                SELECT airline_name,
+                    flight_num,
+                    departure_airport,
+                    DATE_FORMAT(departure_time, '%h:%i %p') AS departure_time,
+                    arrival_airport,
+                    DATE_FORMAT(arrival_time, '%h:%i %p') AS arrival_time,
+                    price,
+                    status,
+                    airplane_id,
+                    a1.airport_city as departure_city,
+                    a2.airport_city as arrival_city 
+                FROM flight as f
+                JOIN airport as a1 on f.departure_airport = a1.airport_name
+                JOIN airport as a2 on f.arrival_airport = a2.airport_name
+                WHERE (f.departure_airport = '{}' and f.arrival_airport = '{}')
+                OR (f.departure_airport = '{}' and f.arrival_airport = '{}' and f.departure_time ='{}')
+                """
+                # OR (f.departure_airport = '{}' and f.arrival_airport = '{}' and f.departure_time ='{}')
+        cursor.execute(
+            query.format(
+                leaving_from_airport,
+                going_to_airport,
+                leaving_from_airport,
+                going_to_airport,
+                departure_date,
+            )
         )
-    )
+    elif leaving_from_airport and going_to_airport:
+        query = """
+                SELECT airline_name,
+                    flight_num,
+                    departure_airport,
+                    DATE_FORMAT(departure_time, '%h:%i %p') AS departure_time,
+                    arrival_airport,
+                    DATE_FORMAT(arrival_time, '%h:%i %p') AS arrival_time,
+                    price,
+                    status,
+                    airplane_id,
+                    a1.airport_city as departure_city,
+                    a2.airport_city as arrival_city 
+                FROM flight as f
+                JOIN airport as a1 on f.departure_airport = a1.airport_name
+                JOIN airport as a2 on f.arrival_airport = a2.airport_name
+                WHERE (f.departure_airport = '{}' and f.arrival_airport = '{}')
+                """
+        cursor.execute(
+            query.format(
+                leaving_from_airport,
+                going_to_airport,
+            )
+        )
 
     flights = cursor.fetchall()
     cursor.close()
