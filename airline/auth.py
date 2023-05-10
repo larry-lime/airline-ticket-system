@@ -21,10 +21,7 @@ bp = Blueprint("auth", __name__, url_prefix="/auth")
 def login_required(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):
-        if g.user is None:
-            return redirect(url_for("auth.login"))
-
-        return view(**kwargs)
+        return redirect(url_for("auth.login")) if g.user is None else view(**kwargs)
 
     return wrapped_view
 
@@ -146,7 +143,7 @@ def register_customer():
             )
             conn.commit()
             cursor.close()
-            return redirect(url_for("auth.login"))
+            return redirect(url_for("airline.index"))
 
         flash(error)
 
@@ -192,7 +189,7 @@ def register_staff():
             )
             conn.commit()
             cursor.close()
-            return redirect(url_for("auth.login"))
+            return redirect(url_for("airline.index"))
 
         flash(error)
 
@@ -203,12 +200,13 @@ def register_staff():
 def register_agent():
     airlines = get_airlines()
     if request.method == "POST":
-        airline_name = request.form["airline_name"]
+        airline_name = request.form.get("airline_name")
         username = session["username"]
         password = session["password"]
         first_name = session["first_name"]
         last_name = session["last_name"]
         booking_agent_id = int(request.form["booking_agent_id"])
+
 
         conn = get_db()
         cursor = conn.cursor(dictionary=True)
@@ -228,11 +226,14 @@ def register_agent():
         cursor.execute(query.format(booking_agent_id, airline_name))
         data2 = cursor.fetchone()
 
-        # TODO: Pull this out and refactor it eventually
-        if data1 is not None:
+        # TODO: Make it booking_agent_id + airline instead of just booking agent
+        if airline_name is None:
+            error = "Please select an airline."
+        elif data1 is not None:
             error = f"User {username} is already registered."
         elif data2 is not None:
-            error = f"Booking agent ID {booking_agent_id} for {airline_name} airlines is already taken."
+            # error = f"Booking agent ID {booking_agent_id} for {airline_name} airlines is already taken."
+            error = f"Booking agent ID {booking_agent_id} is already taken."
 
         if error is None:
             # Insert into booking agent
@@ -258,7 +259,7 @@ def register_agent():
             cursor.execute(query.format(username, airline_name))
             conn.commit()
             cursor.close()
-            return redirect(url_for("auth.login"))
+            return redirect(url_for("airline.index"))
 
         flash(error)
 
