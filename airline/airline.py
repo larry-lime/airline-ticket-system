@@ -46,7 +46,7 @@ def index():
     delete_ticket_id = request.args.get("delete_ticket_id")
     username = g.user["username"] if user_is_logged_in() else None
     purchases = posts = []
-    graphJSON = graphJSON2 = graphJSON3 = graphJSON4 = flights = None
+    graphJSON = graphJSON2 = graphJSON3 = graphJSON9 = graphJSON10 = flights = None
     commission = total_tickets_sold = None
     month_top_booking_agents = (
         year_top_booking_agents
@@ -83,16 +83,16 @@ def index():
         commission = get_commission(g.user["booking_agent_id"])
         booking_agent_id = g.user["booking_agent_id"]
         total_tickets_sold = get_total_tickets_sold(g.user["booking_agent_id"])
-        # top_5_customers_6_months = get_top_5_customers_6_months(g.user["booking_agent_id"])
-        # top_5_customers_1_year = get_top_5_customers_1_year(g.user["booking_agent_id"])
+        top_5_customers_6_months = get_top_5_customers_6_months(g.user["booking_agent_id"])
+        top_5_customers_1_year = get_top_5_customers_1_year(g.user["booking_agent_id"])
 
         purchases = (
             booking_agent_get_purchases(booking_agent_id)
             if user_is_logged_in()
             else None
         )
-        graphJSON = plot_top_5_customers_1_year(booking_agent_id)
-        graphJSON2 = plot_top_5_customers_6_months(booking_agent_id)
+        graphJSON9 = plot_top_5_customers_1_year(booking_agent_id)
+        graphJSON10 = plot_top_5_customers_6_months(booking_agent_id)
 
     if request.method == "POST":
         leaving_from_airport = request.form.get("leaving_from")
@@ -167,7 +167,8 @@ def index():
         graphJSON=graphJSON,
         graphJSON2=graphJSON2,
         graphJSON3=graphJSON3,
-        graphJSON4=graphJSON4,
+        graphJSON9=graphJSON9,
+        graphJSON10=graphJSON10,
         posts=posts,
         purchases=purchases,
         month_top_booking_agents=month_top_booking_agents,
