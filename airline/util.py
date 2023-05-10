@@ -283,3 +283,20 @@ def get_flight(flight_num):
         abort(404, f"Post id {flight_num} doesn't exist.")
 
     return flight
+
+def get_posts():
+    """
+    Get all blog posts from the database
+    """
+    conn = get_db()
+    cursor = conn.cursor(dictionary=True)
+    query = """
+            SELECT *
+            FROM post
+            """
+    cursor.execute(query)
+    posts = cursor.fetchall()
+    cursor.close()
+
+    return posts
+

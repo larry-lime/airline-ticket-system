@@ -25,7 +25,19 @@ bp = Blueprint("airline", __name__)
 # TODO: Update this and populate this with content when the post() table is updated with actual content
 @bp.route("/<int:post_id>/post", methods=("GET", "POST"))
 def post(post_id):
-    return render_template("airline/post.html", post_id=post_id)
+    post = request.args.get("post_id")
+    conn = get_db()
+    cursor = conn.cursor(dictionary=True)
+    query = """
+            SELECT *
+            FROM post
+            WHERE id = {}
+            """
+    cursor.execute(query.format(post_id))
+    post = cursor.fetchone()
+    cursor.close()
+
+    return render_template("airline/post.html", post=post)
 
 
 @bp.route("/", methods=("GET", "POST"))
@@ -41,6 +53,7 @@ def index():
     ) = frequent_customers = year_top_destinations = month_top_destinations = []
     top_5_customers_6_months = top_5_customers_1_year = []
     revenue_dist = total_tickets_sold_1_month = total_tickets_sold_1_year = 0
+    posts = get_posts()
 
     if delete_ticket_id is not None:
         refund(delete_ticket_id)
