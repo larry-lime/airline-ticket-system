@@ -114,6 +114,7 @@ def init_db_command():
 
 
 @click.command("insert-posts")
+# TODO: Not finished
 def insert_posts_command():
     """Create a sample post"""
     username = "billythekid"

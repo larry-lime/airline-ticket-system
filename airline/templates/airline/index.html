@@ -256,7 +256,9 @@
           <div class="card-body">
             <h4>Total Commisions: ${{ commission['commission'] }} USD</h4>
             <h4>Total Number of Tickets Sold: {{ total_tickets_sold['total_tickets_sold'] }} Tickets</h4>
-            <h4>Average Commission Recieved: ~${{ commission['commission']//total_tickets_sold['total_tickets_sold'] if commission['commission'] else 0 }} USD</h4>
+            <h4>
+              Average Commission Recieved: ~${{ commission['commission']//total_tickets_sold['total_tickets_sold'] if commission['commission'] else 0 }} USD
+            </h4>
           </div>
         </div>
       </div>
@@ -271,29 +273,29 @@
           <div class="card-header">
             <h4>Past 6 Months</h4>
           </div>
-          <ol>
-            <div class="card-body">
-              {% for customer in top_5_customers_6_months %}
-                <h4>
-                  <li>{{ customer['customer_email'] }}: {{ customer['total_tickets_bought'] }} Tickets Purchased</li>
-                </h4>
-              {% endfor %}
+          <div class="container-lg-5 pt-3">
+            <div class="card mb-3">
+              <div class="card-header">
+                <div class="row">
+                  <div id='chart2' class='chart2'”></div>
+                </div>
+              </div>
             </div>
-          </ol>
+          </div>
         </div>
         <div class="card mb-3">
           <div class="card-header">
             <h4>Past 1 Year</h4>
           </div>
-          <ol>
-            <div class="card-body">
-              {% for customer in top_5_customers_1_year %}
-                <h4>
-                  <li>{{ customer['customer_email'] }}: {{ customer['total_tickets_bought'] }} Tickets Purchased</li>
-                </h4>
-              {% endfor %}
+          <div class="container-lg-5 pt-3">
+            <div class="card mb-3">
+              <div class="card-header">
+                <div class="row">
+                  <div id='chart1' class='chart1'”></div>
+                </div>
+              </div>
             </div>
-          </ol>
+          </div>
         </div>
       </div>
     {% endif %}
@@ -365,19 +367,28 @@
           <div class="card-header">
             <h4>Sales Numbers</h4>
           </div>
-            <div class="card-body">
-            <h4>Total Tickets Sold (1 month): {{ total_tickets_sold_1_month['total_tickets'] }}</h4>
-            <h4>Total Tickets Sold (1 year): {{ total_tickets_sold_1_year['total_tickets'] }}</h4>
-            </div>
+          <div class="card-body">
+            <h4>
+              Total Tickets Sold (1 month): {{ total_tickets_sold_1_month['total_tickets'] if total_tickets_sold_1_month else 0 }}
+            </h4>
+            <h4>
+              Total Tickets Sold (1 year): {{ total_tickets_sold_1_year['total_tickets'] if total_tickets_sold_1_year else 0 }}
+            </h4>
+          </div>
         </div>
         <div class="card mb-3">
           <div class="card-header">
             <h4>Revenue Flow Comparison</h4>
           </div>
-            <div class="card-body">
-            <h4>Booking Agent Sales Percentage: {{ revenue_dist['ratio'] * 100 if revenue_dist['ratio'] else 0 }}%</h4>
-            <h4>Customer Sales Percentage: {{ 100 - revenue_dist['ratio'] * 100 if revenue_dist['ratio'] else 0 }}%</h4>
-            </div>
+          <div class="card-body">
+
+            <h4>
+              Booking Agent Sales Percentage: {{ revenue_dist['ratio'] * 100 if revenue_dist and revenue_dist['ratio'] else 0 }}%
+            </h4>
+            <h4>
+              Customer Sales Percentage: {{ 100 - revenue_dist['ratio'] * 100 if revenue_dist and revenue_dist['ratio'] else 0 }}%
+            </h4>
+          </div>
         </div>
       </div>
 
@@ -438,7 +449,7 @@
 
     <!--TODO: <script src="URL"> here!-->
   {% endif %}
-  <!-- Purchase history -->
+  <!-- Blog Posts -->
   <div class="container-lg-5 pt-3">
     <h1>Blog Posts</h1>
     <div class="row row-cols-1 row-cols-md-3 g-4">
@@ -463,7 +474,11 @@
   <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
   <script type='text/javascript'>
   var graphs = {{ graphJSON | safe }};
-  Plotly.plot('chart',graphs,{});
+  Plotly.plot('chart1',graphs,{});
+  </script>
+  <script type='text/javascript'>
+  var graphs = {{ graphJSON2 | safe }};
+  Plotly.plot('chart2',graphs,{});
   </script>
   <script>
   const roundTripBtn = document.getElementById("round-trip-btn");
