@@ -277,7 +277,7 @@
             <div class="card mb-3">
               <div class="card-header">
                 <div class="row">
-                  <div id='chart2' class='chart2'”></div>
+                  <div id='chart10' class='chart10'”></div>
                 </div>
               </div>
             </div>
@@ -291,7 +291,7 @@
             <div class="card mb-3">
               <div class="card-header">
                 <div class="row">
-                  <div id='chart1' class='chart1'”></div>
+                  <div id='chart9' class='chart9'”></div>
                 </div>
               </div>
             </div>
@@ -494,8 +494,12 @@
   Plotly.plot('chart3',graphs,{});
   </script>
   <script type='text/javascript'>
-  var graphs = {{ graphJSON4 | safe }};
-  Plotly.plot('chart4',graphs,{});
+  var graphs = {{ graphJSON9 | safe }};
+  Plotly.plot('chart9',graphs,{});
+  </script>
+  <script type='text/javascript'>
+  var graphs = {{ graphJSON10 | safe }};
+  Plotly.plot('chart10',graphs,{});
   </script>
   <script>
   const roundTripBtn = document.getElementById("round-trip-btn");
