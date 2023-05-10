@@ -194,13 +194,14 @@ def get_revenue_dist(airline_name):
     # divide total volume by total volume of direct sales
     query = """
             SELECT (SELECT COUNT(*)
-                FROM purchases as p1
-                WHERE p1.booking_agent_id is not null)
+                FROM purchases natural join ticket natural join flight
+                WHERE purchases.booking_agent_id is not null and airline_name = '{}')
                    /
                (SELECT COUNT(*)
-                FROM purchases as p2) as ratio;
+                FROM purchases natural join ticket natural join flight
+                WHERE airline_name = '{}') as ratio;
             """
-    cursor.execute(query.format(airline_name))
+    cursor.execute(query.format(airline_name, airline_name))
     revenue_ratio = cursor.fetchone()
     cursor.close()
     return revenue_ratio
@@ -213,7 +214,10 @@ def plot_revenue_split(airline_name):
     ratio_dict = get_revenue_dist(airline_name)
     ratio = ratio_dict["ratio"]
     labels = ["Booking Agent Sales", "Direct Sales"]
-    values = [ratio, 1 - ratio]
+    if ratio:
+        values = [ratio, 1 - ratio]
+    else:
+        values = [0,0]
 
     fig = px.pie(values=values, names=labels, title="Revenue Split")
     return json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
