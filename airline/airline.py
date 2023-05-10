@@ -274,15 +274,18 @@ def purchase_ticket(id):
 
     # TODO: Add a trigger to UPDATE a booking agent's commission when a ticket is purchased
     if request.method == "POST":
+        customer_email = None
         user_info = get_user_info(g.user["username"], g.user_type)
         ticket_id = request.form.get("ticket")
-        # session["customer_email"] = customer_email = request.form.get("customer_email")
         error = None
 
         if ticket_id is None:
             error = "Ticket is required."
-        # elif customer_email is None:
-        #     error = "Customer email is required."
+
+        if g.user_type == "booking_agent":
+            session["customer_email"] = customer_email = request.form.get("customer_email")
+            if customer_email is None:
+                error = "Customer email is required."
 
         if error is None:
             purchase_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
