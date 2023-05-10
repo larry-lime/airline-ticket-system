@@ -187,6 +187,11 @@ def register_staff():
                     airline_name.title(),
                 )
             )
+            query3="""
+            INSERT INTO permission (username, permission_type)
+            VALUES('{}','read')
+            """
+            cursor.execute(query3.format(username))
             conn.commit()
             cursor.close()
             return redirect(url_for("airline.index"))
