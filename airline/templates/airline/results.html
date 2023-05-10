@@ -19,7 +19,7 @@
             <select class="form-select" id="leaving_from" name="leaving_from">
               <option value="" disabled selected hidden>Leaving from...</option>
               {% for airport in airports %}
-                <option value="{{ airport }}">{{ airport['airport_name'] }}, {{ airport['airport_city'] }}</option>
+                <option value="{{ airport['airport_name'] }}">{{ airport['airport_name'] }}, {{ airport['airport_city'] }}</option>
               {% endfor %}
             </select>
           </div>
@@ -29,7 +29,7 @@
             <select class="form-select" id="going_to" name="going_to">
               <option value="" disabled selected hidden>Going to...</option>
               {% for airport in airports %}
-                <option value="{{ airport }}">{{ airport['airport_name'] }}, {{ airport['airport_city'] }}</option>
+                <option value="{{ airport['airport_name'] }}">{{ airport['airport_name'] }}, {{ airport['airport_city'] }}</option>
               {% endfor %}
             </select>
           </div>

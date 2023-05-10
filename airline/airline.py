@@ -34,7 +34,7 @@ def index():
     delete_ticket_id = request.args.get("delete_ticket_id")
     username = g.user["username"] if user_is_logged_in() else None
     purchases = posts = []
-    graphJSON = graphJSON2 = flights = None
+    graphJSON = graphJSON2 = graphJSON3 = graphJSON4 = flights = None
     commission = total_tickets_sold = None
     month_top_booking_agents = (
         year_top_booking_agents
@@ -56,6 +56,7 @@ def index():
         total_tickets_sold_1_month = get_total_tickets_sold_1_months(airline_name)
         total_tickets_sold_1_year = get_total_tickets_sold_1_year(airline_name)
         revenue_dist = get_revenue_dist(airline_name)
+        graphJSON3 = plot_revenue_split(airline_name)
 
     elif g.user_type == "customer" and g.user:
         purchases = (
@@ -85,8 +86,8 @@ def index():
         going_to_airport = request.form.get("going_to")
         departure_date = request.form.get("departure_date")
         return_date = request.form.get("return_date")
-        start_date = request.form["start_date"]
-        end_date = request.form["end_date"]
+        start_date = request.form.get("start_date")
+        end_date = request.form.get("end_date")
         button_pressed = request.args.get("bp")
 
         if button_pressed == "update_graph":
@@ -110,8 +111,12 @@ def index():
                 )
         elif button_pressed == "update_summary":
             error = error_check_update_summary(start_date, end_date)
-            commission = get_commission(g.user["booking_agent_id"], start_date, end_date)
-            total_tickets_sold = get_total_tickets_sold(g.user["booking_agent_id"], start_date, end_date)
+            commission = get_commission(
+                g.user["booking_agent_id"], start_date, end_date
+            )
+            total_tickets_sold = get_total_tickets_sold(
+                g.user["booking_agent_id"], start_date, end_date
+            )
             if error is None:
                 return render_template(
                     "airline/index.html",
@@ -148,6 +153,8 @@ def index():
         flights=flights,
         graphJSON=graphJSON,
         graphJSON2=graphJSON2,
+        graphJSON3=graphJSON3,
+        graphJSON4=graphJSON4,
         posts=posts,
         purchases=purchases,
         month_top_booking_agents=month_top_booking_agents,
@@ -289,7 +296,9 @@ def purchase_ticket(id):
                         VALUES ({},'{}','{}','{}')
                         """
                 cursor.execute(
-                    query.format(ticket_id, customer_email, purchase_date, booking_agent_id)
+                    query.format(
+                        ticket_id, customer_email, purchase_date, booking_agent_id
+                    )
                 )
                 conn.commit()
                 cursor.close()

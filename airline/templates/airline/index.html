@@ -389,6 +389,15 @@
               Customer Sales Percentage: {{ 100 - revenue_dist['ratio'] * 100 if revenue_dist and revenue_dist['ratio'] else 0 }}%
             </h4>
           </div>
+      <div class="container-lg-5 pt-3">
+        <div class="card mb-3">
+          <div class="card-header">
+            <div class="row">
+              <div id='chart3' class='chart3'”></div>
+            </div>
+          </div>
+        </div>
+      </div>
         </div>
       </div>
 
@@ -479,6 +488,14 @@
   <script type='text/javascript'>
   var graphs = {{ graphJSON2 | safe }};
   Plotly.plot('chart2',graphs,{});
+  </script>
+  <script type='text/javascript'>
+  var graphs = {{ graphJSON3 | safe }};
+  Plotly.plot('chart3',graphs,{});
+  </script>
+  <script type='text/javascript'>
+  var graphs = {{ graphJSON4 | safe }};
+  Plotly.plot('chart4',graphs,{});
   </script>
   <script>
   const roundTripBtn = document.getElementById("round-trip-btn");
