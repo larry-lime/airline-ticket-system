@@ -7,7 +7,7 @@
         <h1>
           {% block title %}
             {% if g.user %}
-              {{ g.user['first_name'].title() }} the {{ g.user_type.replace("_", " ").title() }}'s Dashboard
+              {{ g.user['first_name'].title() }} the {{ g.user_type.replace('_', ' ') .title() }}'s Dashboard
             {% else %}
               Homepage
             {% endif %}
@@ -389,15 +389,15 @@
               Customer Sales Percentage: {{ 100 - revenue_dist['ratio'] * 100 if revenue_dist and revenue_dist['ratio'] else 0 }}%
             </h4>
           </div>
-      <div class="container-lg-5 pt-3">
-        <div class="card mb-3">
-          <div class="card-header">
-            <div class="row">
-              <div id='chart3' class='chart3'”></div>
+          <div class="container-lg-5 pt-3">
+            <div class="card mb-3">
+              <div class="card-header">
+                <div class="row">
+                  <div id='chart3' class='chart3'”></div>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
         </div>
       </div>
 
