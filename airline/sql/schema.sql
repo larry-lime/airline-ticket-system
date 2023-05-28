@@ -101,7 +101,6 @@ CREATE TABLE
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
     booking_agent_id INT(11) NOT NULL,
-    commission INT DEFAULT 0,
     PRIMARY KEY (username)
   );
 

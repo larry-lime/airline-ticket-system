@@ -106,7 +106,6 @@ def init_db_command():
     """Clear the existing data and create new tables."""
     init_db()
     insert_sample_data()
-    create_triggers()
     click.echo("Initialized the database.")
 
 
