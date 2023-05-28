@@ -14,11 +14,50 @@ from flask import (
 from werkzeug.security import generate_password_hash
 from airline.auth import login_required, user_is_logged_in
 from airline.db import get_db
-from airline.util import *
-from airline.search_util import *
-from airline.staff_util import *
-from airline.agent_util import *
-from airline.error_checking import *
+
+from airline.util import (
+    get_airports,
+    get_posts,
+    get_flight,
+    get_tickets,
+    get_user_info,
+    refund,
+    customer_get_purchases,
+    plot_customer_purchase_totals,
+    booking_agent_get_purchases,
+)
+
+from airline.search_util import (
+    search_all_flights,
+    search_all_tickets,
+    search_as_airline_staff,
+    general_search,
+)
+from airline.staff_util import (
+    get_next_month_flights,
+    get_top_agents_of_year,
+    get_top_agents_of_month,
+    top_customers,
+    top_destinations_of_year,
+    top_destinations_of_last_3_months,
+    get_total_tickets_sold_1_year,
+    get_total_tickets_sold_1_months,
+    get_revenue_dist,
+    plot_revenue_split,
+)
+from airline.agent_util import (
+    get_commission,
+    get_total_tickets_sold,
+    get_top_5_customers_1_year,
+    get_top_5_customers_6_months,
+    plot_top_5_customers_1_year,
+    plot_top_5_customers_6_months,
+)
+from airline.error_checking import (
+    error_check_search,
+    error_check_update_graph,
+    error_check_update_summary,
+)
 
 bp = Blueprint("airline", __name__)
 
