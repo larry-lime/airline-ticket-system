@@ -20,7 +20,7 @@ git checkout larry
 Run docker-compose
 
 ```bash
-docker-compose up
+docker-compose up -d
 ```
 
 Open http://localhost:9999 in your browser
