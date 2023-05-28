@@ -1,0 +1,14 @@
+version: "3"
+services:
+  app:
+    build: .
+    links:
+      - db
+    ports:
+      - 9999:5000
+  db:
+    image: mysql:8.0.33
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root

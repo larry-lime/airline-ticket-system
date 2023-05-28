@@ -1,7 +1,7 @@
 from flask import Flask
 from dotenv import dotenv_values
 
-env_vars = dotenv_values(".env")
+# env_vars = dotenv_values(".env")
 
 
 def create_app():
@@ -9,10 +9,10 @@ def create_app():
     # create and configure the app
     app.config.from_mapping(
         SECRET_KEY="dev",
-        MYSQL_HOST=env_vars["MYSQLHOST"],
-        MYSQL_USER=env_vars["MYSQLUSER"],
-        MYSQL_PASSWORD=env_vars["MYSQLPASSWORD"],
-        MYSQL_DB_NAME=env_vars["MYSQLDATABASE"],
+        MYSQL_HOST="db",
+        MYSQL_USER="root",
+        MYSQL_PASSWORD="root",
+        MYSQL_DB_NAME="airline",
     )
 
     from . import db
