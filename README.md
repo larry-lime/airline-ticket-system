@@ -1,75 +1,58 @@
 # Database Final Project
 
-[Live Demo](https://airline-ticket-system-production.up.railway.app/) 
+[Live Demo](https://airline-ticket-system-production.up.railway.app/)
 
-## Getting Started
+## Deploy with Docker Compose
 
-1. Create Python virtual environment
+Prerequisite:
 
-```shell
-python3 -m venv .venv
+- Ensure sure [docker-compose](https://docs.docker.com/compose/) is installed on your machine
+- Make sure nothing is running on ports 3306 and 9999
+
+Clone this repository and checkout to the `larry` branch
+
+```bash
+git clone https://github.com/larry-lime/airline-ticket-system
+cd airline-ticket-system
+git checkout larry
 ```
 
-2. Start virtual environment
+Run docker-compose
 
-```shell
-. .venv/bin/activate
+```bash
+docker-compose up
 ```
 
-1. Install requirements
-
-```shell
-pip3 install -r requirements.txt
-```
+Open http://localhost:9999 in your browser
 
 ## Development
 
-1. Start python virtual environment:
+Create Python virtual environment
 
-```shell
+```bash
+python3 -m venv .venv
+```
+
+Start virtual environment
+
+```bash
 . .venv/bin/activate
 ```
 
-2. Initialize database
+Install requirements
 
-```shell
+```bash
+pip3 install -r requirements.txt
+```
+
+Initialize database
+
+```bash
 flask --app airline init-db
 ```
 
-3. Start development server
+Start development server
 
-```
+```bash
 flask --app airline run --debug
 ```
-
-## TODOs
-
-### Easy
-
-- [ ] Use Plotly for data vis
-  - [ ] [Plotly Tutorial](https://towardsdatascience.com/web-visualization-with-plotly-and-flask-3660abf9c946) 
-  - [ ] Use plotly to make a Geo map
-- [ ] Add articles relavent to the airline industry
-  - Sort (reccomend) articles based on purchase history
-  - "Reccomend" articles based on destination_city
-  - Write code to make requests to OpenAI api (test it if we have tokens)
-  - Allow airline staff to do this stuff
-- [ ] Add icons to the frontend
-- [ ] Have a form send you an email when a new user signs up
-  - Use [Formspree](https://formspree.io/forms) potentially
-  - Send an email for ticket purchase
-- [ ] Add foreign currency support
-- [ ] Ask use to use their current location
-
-### Medium
-
-- [ ] Generate articles based on airport locations
-- [ ] Add foreign language support. Auto translate everything?
-- [ ] Add ability to login with third party services (Google, Facebook, etc.)
-
-### Hard
-
-- [ ] Add a reccomentation system for articles
-  - [ ] Reccomend them based on their flight purchases (and search history if you want to store that)
-  - [ ] Does not need to use machine learning. It can simply use keywords
-  - [ ] Alternatively, you can use some NLP library
