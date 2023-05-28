@@ -9,10 +9,10 @@ def create_app():
     # create and configure the app
     app.config.from_mapping(
         SECRET_KEY="dev",
-        MYSQL_HOST="localhost",
-        MYSQL_USER="root",
-        MYSQL_PASSWORD='',
-        MYSQL_DB_NAME="airline",
+        MYSQL_HOST=env_vars["MYSQLHOST"],
+        MYSQL_USER=env_vars["MYSQLUSER"],
+        MYSQL_PASSWORD=env_vars["MYSQLPASSWORD"],
+        MYSQL_DB_NAME=env_vars["MYSQLDATABASE"],
     )
 
     from . import db
