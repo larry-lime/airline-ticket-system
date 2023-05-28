@@ -75,7 +75,6 @@ VALUES ('johndoe',
 -- permission table
 INSERT INTO permission (username, permission_type)
 VALUES ('johndoe', 'admin'),
-       ('staffadmin@gmail.com', 'admin'),
        ('janedoe', 'read'),
        ('bobsmith', 'write'),
        ('sallysmith', 'read'),
