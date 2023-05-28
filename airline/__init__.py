@@ -1,7 +1,7 @@
 from flask import Flask
 from dotenv import dotenv_values
 
-# env_vars = dotenv_values(".env")
+env_vars = dotenv_values(".env")
 
 
 def create_app():

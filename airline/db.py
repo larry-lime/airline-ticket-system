@@ -2,7 +2,6 @@ import mysql.connector
 
 import click
 from flask import current_app, g
-from gpt4free import theb
 
 def get_db():
     if "db" not in g:
@@ -108,22 +107,6 @@ def init_db_command():
     insert_sample_data()
     click.echo("Initialized the database.")
 
-
-@click.command("insert-posts")
-# TODO: Not finished
-def insert_posts_command():
-    """Create a sample post"""
-    username = "billythekid"
-    destination_city = "Boston"
-    airport = "BOS"
-
-    x = f"Write a 200 word blogpost about travel destinations in {destination_city}."
-    body = "".join(theb.Completion.create(x))
-    insert_posts(username, airport, destination_city, body)
-    click.echo("Inserted sample post")
-
-
 def init_app(app):
     app.teardown_appcontext(close_db)
     app.cli.add_command(init_db_command)
-    app.cli.add_command(insert_posts_command)
