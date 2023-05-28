@@ -20,8 +20,19 @@ def close_db(e=None):
     if db is not None:
         db.close()
 
+def create_db():
+    # Create the database
+    conn = mysql.connector.connect(
+        host=current_app.config["MYSQL_HOST"],
+        user=current_app.config["MYSQL_USER"],
+        password=current_app.config["MYSQL_PASSWORD"],
+    )
+    cursor = conn.cursor()
+    cursor.execute("CREATE DATABASE airline")
+    conn.commit()
+    cursor.close()
 
-def init_db():
+def create_tables():
     conn = get_db()
 
     # Create tables
@@ -103,7 +114,8 @@ def insert_posts(username, airport, destination_city, post_body):
 @click.command("init-db")
 def init_db_command():
     """Clear the existing data and create new tables."""
-    init_db()
+    create_db()
+    create_tables()
     insert_sample_data()
     click.echo("Initialized the database.")
 

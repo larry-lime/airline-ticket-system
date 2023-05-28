@@ -1,14 +1,25 @@
 version: "3"
+  
 services:
+
+  db:
+    image: mysql:8.0.33
+    container_name: db
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: airline
+
+    volumes: 
+      - ./init:/docker-entrypoint-initdb.d
+
   app:
     build: .
     links:
       - db
     ports:
       - 9999:5000
-  db:
-    image: mysql:8.0.33
-    ports:
-      - 3306:3306
-    environment:
-      MYSQL_ROOT_PASSWORD: root
+    depends_on:
+      - db
