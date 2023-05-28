@@ -122,7 +122,8 @@ def plot_customer_purchase_totals(username, start_date="", end_date=""):
     if start_date != "" and end_date != "":
         num_months = max(
             # convert start and end date to epoch time
-            (pd.Timestamp(end_date) - pd.Timestamp(start_date)).days // 30, 1
+            (pd.Timestamp(end_date) - pd.Timestamp(start_date)).days // 30,
+            1,
         )
     amount_per_month = [0 for _ in range(12)]
     purchases = load_purchases(username, start_date, end_date)
@@ -284,6 +285,7 @@ def get_flight(flight_num):
 
     return flight
 
+
 def get_posts():
     """
     Get all blog posts from the database
@@ -299,4 +301,3 @@ def get_posts():
     cursor.close()
 
     return posts
-

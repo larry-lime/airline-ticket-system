@@ -4,7 +4,6 @@ import click
 from flask import current_app, g
 from gpt4free import theb
 
-
 def get_db():
     if "db" not in g:
         g.db = mysql.connector.connect(

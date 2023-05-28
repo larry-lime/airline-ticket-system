@@ -10,7 +10,8 @@ from flask import (
     url_for,
 )
 
-from werkzeug.security import check_password_hash, generate_password_hash
+# TODO: Split this into three files: one for each user type
+from werkzeug.security import generate_password_hash
 from airline.auth import login_required, user_is_logged_in
 from airline.db import get_db
 from airline.util import *
@@ -22,7 +23,6 @@ from airline.error_checking import *
 bp = Blueprint("airline", __name__)
 
 
-# TODO: Update this and populate this with content when the post() table is updated with actual content
 @bp.route("/<int:post_id>/post", methods=("GET", "POST"))
 def post(post_id):
     post = request.args.get("post_id")
@@ -72,11 +72,7 @@ def index():
         graphJSON3 = plot_revenue_split(airline_name)
 
     elif g.user_type == "customer" and g.user:
-        purchases = (
-            customer_get_purchases(username, g.user_type)
-            if user_is_logged_in()
-            else None
-        )
+        purchases = customer_get_purchases(username, g.user_type) if user_is_logged_in() else None
         graphJSON = plot_customer_purchase_totals(username)
 
     elif g.user_type == "booking_agent" and g.user:
@@ -86,11 +82,7 @@ def index():
         top_5_customers_6_months = get_top_5_customers_6_months(g.user["booking_agent_id"])
         top_5_customers_1_year = get_top_5_customers_1_year(g.user["booking_agent_id"])
 
-        purchases = (
-            booking_agent_get_purchases(booking_agent_id)
-            if user_is_logged_in()
-            else None
-        )
+        purchases = booking_agent_get_purchases(booking_agent_id) if user_is_logged_in() else None
         graphJSON9 = plot_top_5_customers_1_year(booking_agent_id)
         graphJSON10 = plot_top_5_customers_6_months(booking_agent_id)
 
@@ -124,9 +116,7 @@ def index():
                 )
         elif button_pressed == "update_summary":
             error = error_check_update_summary(start_date, end_date)
-            commission = get_commission(
-                g.user["booking_agent_id"], start_date, end_date
-            )
+            commission = get_commission(g.user["booking_agent_id"], start_date, end_date)
             total_tickets_sold = get_total_tickets_sold(
                 g.user["booking_agent_id"], start_date, end_date
             )
@@ -143,9 +133,7 @@ def index():
                     end_date=end_date,
                 )
         elif button_pressed == "search_flights":
-            error = error_check_search(
-                leaving_from_airport, going_to_airport, departure_date
-            )
+            error = error_check_search(leaving_from_airport, going_to_airport, departure_date)
 
             if error is None:
                 return redirect(
@@ -230,9 +218,7 @@ def search_results():
         departure_date = request.form.get("departure_date")
         return_date = request.form.get("return_date")
 
-        error = error_check_search(
-            leaving_from_airport, going_to_airport, departure_date
-        )
+        error = error_check_search(leaving_from_airport, going_to_airport, departure_date)
 
         if error is None:
             return redirect(
@@ -297,9 +283,7 @@ def purchase_ticket(id):
                         INSERT INTO purchases(ticket_id, customer_email, purchase_date)
                         VALUES ({},'{}','{}')
                         """
-                cursor.execute(
-                    query.format(ticket_id, user_info["username"], purchase_date)
-                )
+                cursor.execute(query.format(ticket_id, user_info["username"], purchase_date))
                 conn.commit()
                 cursor.close()
 
@@ -309,13 +293,14 @@ def purchase_ticket(id):
                 conn = get_db()
                 cursor = conn.cursor()
                 query = """
-                        INSERT INTO purchases(ticket_id, customer_email, purchase_date, booking_agent_id)
+                        INSERT INTO purchases(ticket_id,
+                                              customer_email,
+                                              purchase_date,
+                                              booking_agent_id)
                         VALUES ({},'{}','{}','{}')
                         """
                 cursor.execute(
-                    query.format(
-                        ticket_id, customer_email, purchase_date, booking_agent_id
-                    )
+                    query.format(ticket_id, customer_email, purchase_date, booking_agent_id)
                 )
                 conn.commit()
                 cursor.close()
@@ -349,35 +334,22 @@ def staff_action():
 
         staff_action = request.form.get("staff_action")
 
-        if (
-            permission_type["permission_type"] == "admin"
-            and staff_action == "create_new_flight"
-        ):
+        if permission_type["permission_type"] == "admin" and staff_action == "create_new_flight":
             return redirect(url_for("airline.add_flight"))
         elif (
-            permission_type["permission_type"] == "write"
-            or permission_type["permission_type"] == "admin"
-        ) and staff_action == "change_status":
+            permission_type["permission_type"] in ["write", "admin"]
+            and staff_action == "change_status"
+        ):
             return redirect(url_for("airline.change_status"))
-        elif (
-            permission_type["permission_type"] == "admin"
-            and staff_action == "add_airplane"
-        ):
+        elif permission_type["permission_type"] == "admin" and staff_action == "add_airplane":
             return redirect(url_for("airline.add_airplane"))
-        elif (
-            permission_type["permission_type"] == "admin"
-            and staff_action == "add_new_airport"
-        ):
+        elif permission_type["permission_type"] == "admin" and staff_action == "add_new_airport":
             return redirect(url_for("airline.add_new_airport"))
         elif (
-            permission_type["permission_type"] == "admin"
-            and staff_action == "grant_new_permission"
+            permission_type["permission_type"] == "admin" and staff_action == "grant_new_permission"
         ):
             return redirect(url_for("airline.grant_new_permission"))
-        elif (
-            permission_type["permission_type"] == "admin"
-            and staff_action == "add_booking_agent"
-        ):
+        elif permission_type["permission_type"] == "admin" and staff_action == "add_booking_agent":
             return redirect(url_for("airline.add_booking_agent"))
         else:
             error = f"User {username} doesn't have the permission"
@@ -390,7 +362,7 @@ def staff_action():
 # search func.
 def add_flight():
     if request.method == "POST":
-        username = g.user["username"]
+        g.user["username"]
         airline_name = g.user["airline_name"]
         flight_num = request.form["flight_num"]
         departure_airport = request.form["departure_airport"]
@@ -409,7 +381,7 @@ def add_flight():
         cursor.execute(query.format(flight_num))
         flight_data = cursor.fetchone()
         if flight_data is not None:
-            error = f"Flight has existed in the system"
+            error = "Flight has existed in the system"
         else:
             query = """
                 INSERT INTO flight
@@ -462,7 +434,7 @@ def add_airplane():
         cursor.execute(query.format(airline_name, airplane_id))
         data = cursor.fetchone()
         if data is not None:
-            error = f"Airplane has existed in the system"
+            error = "Airplane has existed in the system"
         else:
             query = """
                 INSERT INTO airplane
@@ -498,7 +470,7 @@ def add_new_airport():
         cursor.execute(query.format(airport_name, airport_city))
         data = cursor.fetchone()
         if data is not None:
-            error = f"Airport has existed in the system"
+            error = "Airport has existed in the system"
         else:
             query = """
                 INSERT INTO airport
@@ -582,9 +554,7 @@ def grant_new_permission():
         cursor = conn.cursor(dictionary=True)
         error = None
 
-        query = (
-            "SELECT * FROM permission WHERE username = '{}' and permission_type = '{}'"
-        )
+        query = "SELECT * FROM permission WHERE username = '{}' and permission_type = '{}'"
         cursor.execute(query.format(username, permission_type))
         data = cursor.fetchone()
         if data is not None:

@@ -1,5 +1,4 @@
 from airline.db import get_db
-from werkzeug.exceptions import abort
 
 import pandas as pd
 import json
@@ -112,9 +111,7 @@ def plot_top_5_customers_6_months(booking_agent_id):
         customer_list.append(customer["customer_email"])
         total_tickets_bought.append(customer["total_tickets_bought"])
 
-    df = pd.DataFrame(
-        {"Customers": customer_list, "Total Tickets Bought": total_tickets_bought}
-    )
+    df = pd.DataFrame({"Customers": customer_list, "Total Tickets Bought": total_tickets_bought})
     fig = px.bar(df, x="Customers", y="Total Tickets Bought", barmode="group")
     return json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
 
@@ -132,9 +129,7 @@ def plot_top_5_customers_1_year(booking_agent_id):
         customers_list.append(customer["customer_email"])
         commission_per_customer.append(customer["total_commission"])
 
-    df = pd.DataFrame(
-        {"Customers": customers_list, "Commission Total": commission_per_customer}
-    )
+    df = pd.DataFrame({"Customers": customers_list, "Commission Total": commission_per_customer})
     fig = px.bar(df, x="Customers", y="Commission Total", barmode="group")
     return json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
 
@@ -150,8 +145,11 @@ def get_top_5_customers_1_year(booking_agent_id):
             FROM purchases
                      NATURAL JOIN ticket
                      NATURAL JOIN flight
-                     JOIN (booking_agent join booking_agent_work_for bawf on booking_agent.username = bawf.email)
-                          on purchases.booking_agent_id = booking_agent.booking_agent_id and flight.airline_name = bawf.airline_name
+                     JOIN (booking_agent
+                           JOIN booking_agent_work_for bawf
+                           ON booking_agent.username = bawf.email)
+                     ON purchases.booking_agent_id = booking_agent.booking_agent_id
+                     AND flight.airline_name = bawf.airline_name
             WHERE purchases.booking_agent_id = {}
               AND purchase_date >= DATE_SUB(NOW()
                 , INTERVAL 1 YEAR)
