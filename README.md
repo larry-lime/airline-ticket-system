@@ -1,7 +1,5 @@
 # Database Final Project
 
-[Live Demo](https://airline-ticket-system-production.up.railway.app/)
-
 ## Deploy with Docker
 
 Prerequisite:
@@ -9,7 +7,7 @@ Prerequisite:
 - Ensure sure Docker is installed on your machine
 - Make sure nothing is running on ports 8000 and 9999
 
-Clone this repository and checkout to the `larry` branch
+Clone this repository
 
 ```bash
 git clone https://github.com/larry-lime/airline-ticket-system
