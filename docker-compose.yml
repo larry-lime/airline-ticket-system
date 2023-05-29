@@ -7,10 +7,10 @@ services:
     ports:
       - 8000:8000
     environment:
-      MYSQL_HOST: mysqldb
-      MYSQL_USER: root
-      MYSQL_PASSWORD: root
-      MYSQL_DATABASE: airline
+      MYSQLHOST: mysqldb
+      MYSQLUSER: root
+      MYSQLPASSWORD: root
+      MYSQLDATABASE: airline
     depends_on:
       - mysqldb
     volumes:

@@ -11,10 +11,10 @@ def create_app():
     # create and configure the app
     app.config.from_mapping(
         SECRET_KEY="dev",
-        MYSQL_HOST=os.getenv("MYSQL_HOST"),
-        MYSQL_USER=os.getenv("MYSQL_USER"),
-        MYSQL_PASSWORD=os.getenv("MYSQL_PASSWORD"),
-        MYSQL_DATABASE=os.getenv("MYSQL_DATABASE"),
+        MYSQLHOST=os.getenv("MYSQLHOST"),
+        MYSQLUSER=os.getenv("MYSQLUSER"),
+        MYSQLPASSWORD=os.getenv("MYSQLPASSWORD"),
+        MYSQLDATABASE=os.getenv("MYSQLDATABASE"),
     )
 
     from . import db

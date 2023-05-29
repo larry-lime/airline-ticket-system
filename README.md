@@ -7,14 +7,13 @@
 Prerequisite:
 
 - Ensure sure Docker is installed on your machine
-- Make sure nothing is running on ports 3306 and 8000
+- Make sure nothing is running on ports 8000 and 9999
 
 Clone this repository and checkout to the `larry` branch
 
 ```bash
 git clone https://github.com/larry-lime/airline-ticket-system
 cd airline-ticket-system
-git checkout larry
 ```
 
 Run docker compose
@@ -23,7 +22,7 @@ Run docker compose
 docker compose up -d --build
 ```
 
-Open http://localhost:9999 in your browser
+Open http://localhost:8000 in your browser
 
 ## Development
 
