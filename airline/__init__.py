@@ -9,7 +9,7 @@ def create_app():
     # create and configure the app
     app.config.from_mapping(
         SECRET_KEY="dev",
-        MYSQL_HOST="db",
+        MYSQL_HOST="mysqldb",
         MYSQL_USER="root",
         MYSQL_PASSWORD="root",
         MYSQL_DB_NAME="airline",
