@@ -187,7 +187,7 @@ def register_staff():
                     airline_name.title(),
                 )
             )
-            query3="""
+            query3 = """
             INSERT INTO permission (username, permission_type)
             VALUES('{}','read')
             """
@@ -211,7 +211,6 @@ def register_agent():
         first_name = session["first_name"]
         last_name = session["last_name"]
         booking_agent_id = int(request.form["booking_agent_id"])
-
 
         conn = get_db()
         cursor = conn.cursor(dictionary=True)

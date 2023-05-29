@@ -6,6 +6,7 @@ def error_check_search(leaving_from_airport, going_to_airport, departure_date):
         error = "Going to airport is required."
     return error
 
+
 def error_check_update_graph(start_date, end_date):
     error = None
     if start_date == "":
@@ -13,6 +14,7 @@ def error_check_update_graph(start_date, end_date):
     elif end_date == "":
         error = "End date is required."
     return error
+
 
 def error_check_update_summary(start_date, end_date):
     error = None

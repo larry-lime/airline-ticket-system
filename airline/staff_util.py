@@ -217,7 +217,7 @@ def plot_revenue_split(airline_name):
     if ratio:
         values = [ratio, 1 - ratio]
     else:
-        values = [0,0]
+        values = [0, 0]
 
     fig = px.pie(values=values, names=labels, title="Revenue Split")
     return json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)

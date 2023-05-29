@@ -1,7 +1,7 @@
 import mysql.connector
-
 import click
 from flask import current_app, g
+
 
 def get_db():
     if "db" not in g:
@@ -9,7 +9,7 @@ def get_db():
             host=current_app.config["MYSQL_HOST"],
             user=current_app.config["MYSQL_USER"],
             password=current_app.config["MYSQL_PASSWORD"],
-            database=current_app.config["MYSQL_DB_NAME"],
+            database=current_app.config["MYSQL_DATABASE"],
         )
     return g.db
 
@@ -19,6 +19,7 @@ def close_db(e=None):
 
     if db is not None:
         db.close()
+
 
 def create_db():
     # Create the database
@@ -31,6 +32,7 @@ def create_db():
     cursor.execute("CREATE DATABASE airline")
     conn.commit()
     cursor.close()
+
 
 def create_tables():
     conn = get_db()
@@ -47,6 +49,7 @@ def create_tables():
         print(data) if data else print("Tables Created")
 
     cursor.close()
+
 
 def create_triggers():
     conn = get_db()
@@ -118,6 +121,7 @@ def init_db_command():
     create_tables()
     insert_sample_data()
     click.echo("Initialized the database.")
+
 
 def init_app(app):
     app.teardown_appcontext(close_db)

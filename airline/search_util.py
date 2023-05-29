@@ -88,7 +88,7 @@ def general_search(
                 WHERE (f.departure_airport = '{}' and f.arrival_airport = '{}')
                 OR (f.departure_airport = '{}' and f.arrival_airport = '{}' and f.departure_time ='{}')
                 """
-                # OR (f.departure_airport = '{}' and f.arrival_airport = '{}' and f.departure_time ='{}')
+        # OR (f.departure_airport = '{}' and f.arrival_airport = '{}' and f.departure_time ='{}')
         cursor.execute(
             query.format(
                 leaving_from_airport,
@@ -159,6 +159,7 @@ def search_all_flights():
     all_flights = cursor.fetchall()
     cursor.close()
     return all_flights
+
 
 # TODO: Finish this function
 def search_all_tickets():
