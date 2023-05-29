@@ -11,6 +11,8 @@ services:
       MYSQLUSER: root
       MYSQLPASSWORD: root
       MYSQLDATABASE: airline
+    depends_on:
+      - mysqldb
     volumes:
       - .:/app
 
