@@ -25,7 +25,7 @@ services:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: airline
     volumes:
-      - ./init:/docker-entrypoint-initdb.d
+      - ./airline/init_db:/docker-entrypoint-initdb.d
       - mysql:/var/lib/mysql
       - mysql_config:/etc/mysql
 

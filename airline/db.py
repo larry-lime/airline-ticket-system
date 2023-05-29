@@ -21,50 +21,21 @@ def close_db(e=None):
         db.close()
 
 
-def create_db():
-    # Create the database
+def init_db():
     conn = mysql.connector.connect(
         host=current_app.config["MYSQL_HOST"],
         user=current_app.config["MYSQL_USER"],
         password=current_app.config["MYSQL_PASSWORD"],
     )
-    cursor = conn.cursor()
-    cursor.execute("CREATE DATABASE airline")
-    conn.commit()
-    cursor.close()
-
-
-def create_tables():
-    conn = get_db()
 
     # Create tables
     cursor = conn.cursor()
-    with current_app.open_resource("sql/schema.sql") as f:
+    with current_app.open_resource("init_db/init_db.sql") as f:
         queries = f.read().decode("utf8")
         for query in queries.split(";"):
             if query.strip():
                 cursor.execute(query)
         conn.commit()
-        data = cursor.fetchall()
-        print(data) if data else print("Tables Created")
-
-    cursor.close()
-
-
-def create_triggers():
-    conn = get_db()
-
-    # Create tables
-    cursor = conn.cursor()
-    with current_app.open_resource("sql/triggers.sql") as f:
-        queries = f.read().decode("utf8")
-        for query in queries.split(";"):
-            if query.strip():
-                cursor.execute(query)
-        conn.commit()
-        data = cursor.fetchall()
-        print(data) if data else print("Triggers added")
-
     cursor.close()
 
 
@@ -117,9 +88,7 @@ def insert_posts(username, airport, destination_city, post_body):
 @click.command("init-db")
 def init_db_command():
     """Clear the existing data and create new tables."""
-    create_db()
-    create_tables()
-    insert_sample_data()
+    init_db()
     click.echo("Initialized the database.")
 
 

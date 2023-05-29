@@ -2,12 +2,12 @@
 
 [Live Demo](https://airline-ticket-system-production.up.railway.app/)
 
-## Deploy with Docker Compose
+## Deploy with Docker
 
 Prerequisite:
 
-- Ensure sure [docker-compose](https://docs.docker.com/compose/) is installed on your machine
-- Make sure nothing is running on ports 3306 and 9999
+- Ensure sure Docker is installed on your machine
+- Make sure nothing is running on ports 3306 and 8000
 
 Clone this repository and checkout to the `larry` branch
 
@@ -17,10 +17,10 @@ cd airline-ticket-system
 git checkout larry
 ```
 
-Run docker-compose
+Run docker compose
 
 ```bash
-docker-compose up -d
+docker compose up -d --build
 ```
 
 Open http://localhost:9999 in your browser
