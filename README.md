@@ -76,8 +76,6 @@ This project is a simple airline ticket system that allows customers, booking ag
 
 [![Product Name Screen Shot][product-screenshot]](https://example.com)
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 ### Built With
 
 - [![Flask][Flask.palletsprojects.com]][Flask-url]
@@ -90,7 +88,7 @@ This project is a simple airline ticket system that allows customers, booking ag
 ## Getting Started
 
 This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
+To get a local devlopment instance up and running follow these simple steps.
 
 ### Deploy with Docker
 
